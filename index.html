@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Svelte + TS + Vite App</title>
+    <style>
+      html, body, #splashscreen {
+        width: 100%;
+        height: 100vh;
+        background-color: #fff;
+        overflow: hidden
+      }
+      
+      #splashscreen {
+        z-index: 9999;
+        top: 0;
+        left: 0;
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100vh;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html, body, #splashscreen {
+          background-color: rgb(31 41 55);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
