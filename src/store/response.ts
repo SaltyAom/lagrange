@@ -4,12 +4,16 @@ export interface FetchResponse {
     isLoading: boolean
     response: string
     error: string
+    status: number
+    headers: {}
 }
 
 export const defaultResponse: FetchResponse = {
     isLoading: false,
     response: '',
-    error: ''
+    error: '',
+    status: 0,
+    headers: {}
 }
 
 const fetchResponse = writable<FetchResponse>(defaultResponse)

@@ -19,7 +19,7 @@ export const saveFetchStorage = async (
 
     await writeFile(
         {
-            path: `profile/${index}.json`,
+            path: `com.saltyaom.lagrange/profile/${index}.json`,
             contents: JSON.stringify(get(fetchStorage))
         },
         {
@@ -30,11 +30,11 @@ export const saveFetchStorage = async (
 
 const loadPersistedController = async () => {
     const persistedController = await readTextFile(
-        `./profile/controller.json`,
+        `com.saltyaom.lagrange/profile/controller.json`,
         {
             dir: BaseDirectory.LocalData
         }
-    )
+    ).catch(() => {})
 
     if (!persistedController) return controller.set(defaultController)
 
@@ -43,7 +43,7 @@ const loadPersistedController = async () => {
 
     try {
         const profile = await readTextFile(
-            `./profile/${parsedController.index}.json`,
+            `com.saltyaom.lagrange/profile/${parsedController.index}.json`,
             {
                 dir: BaseDirectory.LocalData
             }
@@ -60,14 +60,14 @@ export const movePersistedFile = async (index: number) => {
 
     // There might be just opening the tab without saving data
     try {
-        await removeFile(`./profile/${index}.json`, {
+        await removeFile(`com.saltyaom.lagrange/profile/${index}.json`, {
             dir: BaseDirectory.LocalData
         })
     } catch (err) {}
 
     for (let i = index; i < limit; i++) {
-        const file = `./profile/${i + 1}.json`
-        const target = `./profile/${i}.json`
+        const file = `com.saltyaom.lagrange/profile/${i + 1}.json`
+        const target = `com.saltyaom.lagrange/profile/${i}.json`
 
         try {
             await renameFile(file, target, {
@@ -94,7 +94,7 @@ const useDeriveSave = () => {
         try {
             if (index === prevIndex) return
  
-            const profile = await readTextFile(`./profile/${index}.json`, {
+            const profile = await readTextFile(`com.saltyaom.lagrange/profile/${index}.json`, {
                 dir: BaseDirectory.LocalData
             })
 
@@ -108,7 +108,7 @@ const useDeriveSave = () => {
 
             await writeFile(
                 {
-                    path: `./profile/controller.json`,
+                    path: `com.saltyaom.lagrange/profile/controller.json`,
                     contents: JSON.stringify(controller)
                 },
                 {

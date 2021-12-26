@@ -8,7 +8,7 @@
     import fetchStorage from '../store/fetch'
     import type { Language, Method } from '../store/fetch'
     import { saveFetchStorage } from '../store/deriveSave'
-    import fetchResponse from '../store/response'
+    import fetchResponse, { defaultResponse } from '../store/response'
 
     import { trySerialize } from '../lib/json'
 
@@ -55,7 +55,7 @@
 
     const get = async () => {
         fetchResponse.update((v) => ({
-            ...v,
+            ...defaultResponse,
             error: !v.error?.startsWith('Lagrange Error: ') ? v.error : '',
             isLoading: true
         }))
@@ -65,11 +65,10 @@
         try {
             headers = JSON.parse($fetchStorage.headers || '{}')
         } catch (err) {
-            return fetchResponse.update((v) => ({
-                ...v,
-                error: 'Lagrange Error: Malform headers',
-                isLoading: false
-            }))
+            return fetchResponse.set({
+                ...defaultResponse,
+                error: 'Lagrange Error: Malform headers'
+            })
         }
 
         let options: FetchOptions = {
@@ -83,15 +82,13 @@
 
             if ($fetchStorage.language === 'graphql')
                 try {
-                    console.log('Var', $fetchStorage.variables)
                     variables = JSON.parse($fetchStorage.variables)
                 } catch (err) {
-                    console.log('Err')
-                    return fetchResponse.update((v) => ({
-                        ...v,
+                    return fetchResponse.set({
+                        ...defaultResponse,
                         error: 'Lagrange Error: Malform variables',
                         isLoading: false
-                    }))
+                    })
                 }
 
             const body =
@@ -112,17 +109,29 @@
         try {
             const response = await fetch(url, options)
 
-            const { data: value } = response
+            const { data: value, headers: responseHeaders, status } = response
 
             fetchResponse.set({
                 isLoading: false,
                 response: trySerialize(value as string),
-                error: null
+                error: null,
+                headers: responseHeaders,
+                status
             })
         } catch (error) {
+            if (
+                error
+                    ?.toString()
+                    .includes('failed to lookup address information')
+            )
+                return fetchResponse.set({
+                    ...defaultResponse,
+                    isLoading: false,
+                    error: 'Lagrange Error: Unable to resolve hostname'
+                })
+
             fetchResponse.set({
-                isLoading: false,
-                response: null,
+                ...defaultResponse,
                 error: error?.toString()
             })
         }

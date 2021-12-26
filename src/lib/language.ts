@@ -1,7 +1,8 @@
 import type { Language } from 'src/store/fetch'
 
 export const detectLanguage = (body: string): Language => {
-    if (!body) return 'json'
+    if (!body) return 'text'
+    if (body.includes("<html")) return 'html'
 
     let [start, ...content] = body.trimStart().split(' ')
 
@@ -10,11 +11,10 @@ export const detectLanguage = (body: string): Language => {
     if (
         ['query', 'mutation', 'subscription'].includes(start) ||
         !startOfContent.startsWith('"')
-    ) {
+    )
         return 'graphql'
-    } else {
-        if (start.startsWith('{')) return 'json'
 
-        return 'text'
-    }
+    if (start.startsWith('{')) return 'json'
+
+    return 'text'
 }

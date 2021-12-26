@@ -9,7 +9,7 @@ export type Method =
     | 'UPDATE'
     | 'CREATE'
 
-export type Language = 'json' | 'graphql' | 'text'
+export type Language = 'json' | 'graphql' | 'text' | 'html'
 
 export interface FetchStorage {
     url: string

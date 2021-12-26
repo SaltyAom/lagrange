@@ -42,24 +42,12 @@
         })
 
         editor.onKeyDown(
-            ({
-                browserEvent: {
-                    key,
-                    metaKey,
-                    stopPropagation
-                },
-            }) => {
+            ({ browserEvent: { key, metaKey, stopPropagation } }) => {
                 if (metaKey && key === 'Enter') {
                     const pos = editor.getPosition()
 
                     $fetchStorage.body = editor.getValue()
-
                     window.dispatchEvent(new CustomEvent('fetch-request'))
-
-                    requestAnimationFrame(() => {
-                        editor.setValue($fetchStorage.body)
-                        editor.setPosition(pos)
-                    })
                 }
             }
         )

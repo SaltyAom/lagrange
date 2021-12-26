@@ -3,6 +3,7 @@ import { onMount } from 'svelte'
 import type monaco from 'monaco-editor'
 
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 // import graphQLWorker from 'monaco-graphql/esm/graphql.worker'
 
@@ -18,7 +19,10 @@ export interface EditorConfig {
     handleCustomEvent: (event: { detail: EditorConfig['config'] }) => void
 }
 
-const editor = (node: HTMLElement) => {
+const editor = (
+    node: HTMLElement,
+    config: monaco.editor.IStandaloneEditorConstructionOptions = {}
+) => {
     let editor: monaco.editor.IStandaloneCodeEditor
     let Monaco: typeof MonacoEditor
 
@@ -44,9 +48,9 @@ const editor = (node: HTMLElement) => {
     onMount(async () => {
         // @ts-ignore
         self.MonacoEnvironment = {
-            getWorker: function (_moduleId: any, label: string) {
-                if (label === 'json') return new jsonWorker()
-                // @ts-ignore
+            getWorker: (_id, language: string) => {
+                if (language === 'json') return new jsonWorker()
+                if (language === 'html') return new htmlWorker()
 
                 return new editorWorker()
             }
@@ -73,7 +77,8 @@ const editor = (node: HTMLElement) => {
                 enabled: false
             },
             // @ts-ignore
-            "bracketPairColorization.enabled": true,
+            'bracketPairColorization.enabled': true,
+            ...config
         })
 
         window

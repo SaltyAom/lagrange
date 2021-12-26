@@ -65,7 +65,7 @@
     <div
         on:mousedown={handleMouseDown}
         id="splitter"
-        class="dark:bg-gray-800"
+        class="z-10 bg-white dark:bg-gray-800"
         style="width:{splitterWidth}px"
     >
         <div class="w-[1px] h-full bg-gray-300 dark:bg-gray-600 mx-auto" />

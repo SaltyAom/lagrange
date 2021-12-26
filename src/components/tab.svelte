@@ -21,9 +21,9 @@
     }
 
     const setActiveTab = (index: number) => async () => {
-        await saveFetchStorage($controller.index)
-
         response.set(defaultResponse)
+
+        await saveFetchStorage($controller.index)
 
         controller.update((v) => ({
             ...v,
@@ -32,21 +32,6 @@
     }
 
     const closeTab = (index: number) => async () => {
-        const tabs = [...$controller.tabs]
-        tabs.splice(index, 1)
-
-        await movePersistedFile(index)
-
-        controller.update((v) => ({
-            ...v,
-            tabs,
-            index: index < tabs.length ? index : tabs.length - 1
-        }))
-    }
-
-    const closeCurrentTab = async () => {
-        const { index } = $controller
-
         const tabs = [...$controller.tabs]
         tabs.splice(index, 1)
 
@@ -71,10 +56,6 @@
                 switch (key) {
                     case 't':
                         newTab()
-                        break
-
-                    case 'w':
-                        closeCurrentTab()
                         break
 
                     case '1':
@@ -171,7 +152,7 @@
     }
 
     #tab::-webkit-scrollbar-thumb {
-        @apply bg-gray-300; 
+        @apply bg-gray-300;
         border-radius: 0.5em;
     }
 

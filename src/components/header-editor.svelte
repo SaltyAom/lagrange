@@ -12,13 +12,13 @@
     }) => {
         updateEditor($fetchStorage.headers, 'json')
 
-        fetchStorage.subscribe(async ({ headers, language }) => {
+        fetchStorage.subscribe(async ({ headers }) => {
             if (!editor) return
             if (headers === prevHeaders) return
 
             prevHeaders = headers
 
-            updateEditor(headers, language)
+            updateEditor(headers, "json")
         })
 
         editor.onDidBlurEditorText(() => {
@@ -28,9 +28,15 @@
 
         editor.onKeyDown(({ browserEvent: { key, metaKey } }) => {
             if (metaKey && key === 'Enter') {
+                const pos = editor.getPosition()
+
                 $fetchStorage.headers = editor.getValue()
 
                 window.dispatchEvent(new CustomEvent('fetch-request'))
+
+                requestAnimationFrame(() => {
+                    editor.setPosition(pos)
+                })
             }
         })
     }

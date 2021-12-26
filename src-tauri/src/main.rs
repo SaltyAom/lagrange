@@ -8,8 +8,10 @@ use tauri::{Menu, MenuItem, Submenu};
 mod command;
 
 fn main() {
-  let app = Menu::new().add_native_item(MenuItem::Hide)
-      .add_native_item(MenuItem::Quit);
+  let app = Menu::new()
+    .add_native_item(MenuItem::CloseWindow)
+    .add_native_item(MenuItem::Hide)
+    .add_native_item(MenuItem::Quit);
 
   let edit = Menu::new()
     .add_native_item(MenuItem::Undo)

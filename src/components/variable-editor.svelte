@@ -18,7 +18,7 @@
 
             prevVariables = variables
 
-            updateEditor(variables, language)
+            updateEditor(variables, "json")
         })
 
         editor.onDidBlurEditorText(() => {
@@ -28,9 +28,15 @@
 
         editor.onKeyDown(({ browserEvent: { key, metaKey } }) => {
             if (metaKey && key === 'Enter') {
+                const pos = editor.getPosition()
+
                 $fetchStorage.variables = editor.getValue()
 
                 window.dispatchEvent(new CustomEvent('fetch-request'))
+
+                requestAnimationFrame(() => {
+                    editor.setPosition(pos)
+                })
             }
         })
     }
