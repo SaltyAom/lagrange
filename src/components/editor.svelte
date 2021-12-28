@@ -23,13 +23,12 @@
             updateEditor(body, language, {
                 overwrite: requestEditorChange
             })
+
             requestEditorChange = false
         })
 
         controller.subscribe(({ index }) => {
             if(index === prevIndex) return
-
-            console.log(index, prevIndex)
 
             requestEditorChange = true
         })
@@ -45,10 +44,8 @@
                 let body = editor.getValue()
                 let language = detectLanguage(body)
 
-                if (language !== $fetchStorage.language) {
+                if (language !== $fetchStorage.language)
                     $fetchStorage.language = language
-                    updateEditor(body, language)
-                }
             }, 100) as unknown as number
         })
 
