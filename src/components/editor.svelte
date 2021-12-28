@@ -1,21 +1,27 @@
 <script lang="ts">
     import fetchStorage from '../store/fetch'
-    import controller from '../store/controller';
+    import controller from '../store/controller'
     import { saveFetchStorage } from '../store/deriveSave'
 
+    import fetchSchema from '../lib/fetchSchema'
     import editor from '../lib/editor'
     import type { EditorConfig } from '../lib/editor'
-
     import { detectLanguage } from '../lib/language'
 
+    import { initializeMode } from 'monaco-graphql/esm/initializeMode'
+
     let editorDebounce: number
-    let prevIndex: number
     let requestEditorChange = false
+
+    let prevIndex: number
+    let prevUrl: string
+
+    const gqlLanguageService = initializeMode()
 
     const onEditorReady: EditorConfig['handleCustomEvent'] = ({
         detail: { Monaco, editor, updateEditor }
     }) => {
-        prevIndex = +$controller.index
+        prevIndex = $controller.index
 
         fetchStorage.subscribe(async ({ body, language }) => {
             if (!editor) return
@@ -27,8 +33,29 @@
             requestEditorChange = false
         })
 
+        fetchStorage.subscribe(async ({ url }) => {
+            if (url === prevUrl) return
+
+            prevUrl = url
+
+            try {
+
+                let schema = await fetchSchema(url)
+
+                gqlLanguageService.setSchemaConfig([
+                    {
+                        // schema,
+                        uri: 'https://akashic.opener.studio/v1/graphql',
+                        introspectionJSON: schema
+                    }
+                ])
+            } catch (err) {
+                gqlLanguageService.setSchemaConfig([])
+            }
+        })
+
         controller.subscribe(({ index }) => {
-            if(index === prevIndex) return
+            if (index === prevIndex) return
 
             requestEditorChange = true
         })
@@ -56,10 +83,10 @@
 
         editor.addCommand(Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.Enter, () => {
             $fetchStorage.body = editor.getValue()
-            window.dispatchEvent(new CustomEvent('fetch-request'))            
+            window.dispatchEvent(new CustomEvent('fetch-request'))
         })
     }
-    
+
     const onEditorDestroy = () => {
         saveFetchStorage()
     }

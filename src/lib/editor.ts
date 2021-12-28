@@ -2,20 +2,19 @@ import { onMount } from 'svelte'
 
 import type monaco from 'monaco-editor'
 
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-// import graphQLWorker from 'monaco-graphql/esm/graphql.worker'
-
 import type MonacoEditor from 'monaco-editor'
 
 export interface EditorConfig {
     config: {
         Monaco: typeof MonacoEditor
         editor: monaco.editor.IStandaloneCodeEditor
-        updateEditor: (body: string, langage?: string, config?: {
-            overwrite: boolean
-        }) => void
+        updateEditor: (
+            body: string,
+            langage?: string,
+            config?: {
+                overwrite: boolean
+            }
+        ) => void
     }
     onEvent: (config: EditorConfig['config']) => void
     handleCustomEvent: (event: { detail: EditorConfig['config'] }) => void
@@ -31,16 +30,20 @@ const editor = (
     let prevBody: string
     let prevLanguage: string
 
-    const updateEditor: EditorConfig['config']['updateEditor'] = (body, language = 'json', { overwrite } = {
-        overwrite: false
-    }) => {
+    const updateEditor: EditorConfig['config']['updateEditor'] = (
+        body,
+        language = 'json',
+        { overwrite } = {
+            overwrite: false
+        }
+    ) => {
         if (!editor) return
 
-        if(overwrite)
-            setEditor(body, language)
+        if (overwrite) setEditor(body, language)
         else {
-            if(prevBody !== body) editor.setValue(body)
-            if(prevLanguage !== language) Monaco.editor.setModelLanguage(editor.getModel(), language)
+            if (prevBody !== body) editor.setValue(body)
+            if (prevLanguage !== language)
+                Monaco.editor.setModelLanguage(editor.getModel(), language)
         }
 
         prevBody = body
@@ -50,22 +53,11 @@ const editor = (
     const setEditor = (body: string, language = 'json') => {
         if (!editor) return
 
-        console.log("SET")
-
         editor.setModel(Monaco.editor.createModel(body, language))
     }
 
     onMount(async () => {
         // @ts-ignore
-        self.MonacoEnvironment = {
-            getWorker: (_id, language: string) => {
-                if (language === 'json') return new jsonWorker()
-                if (language === 'html') return new htmlWorker()
-
-                return new editorWorker()
-            }
-        }
-
         Monaco = await import('monaco-editor')
 
         Monaco.editor.defineTheme('lagrange-dark', {
@@ -88,6 +80,7 @@ const editor = (
             },
             // @ts-ignore
             'bracketPairColorization.enabled': true,
+            tabSize: 2,
             ...config
         })
 
