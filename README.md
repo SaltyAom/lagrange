@@ -12,6 +12,7 @@ If release tab doesn't have what you need or you prefer to build Lagrange form s
 - [Tauri](https://tauri.studio/en/docs/getting-started/intro#setting-up-your-environment)
 - gcc (For compiling C++ linked library)
 - yarn (optional)
+- Webview 2 (Windows)
 
 ## Build
 1. Clone repo

@@ -20,13 +20,8 @@ input, textarea, .editor-scrollable *, #splitter * {
 
 #welcome {
     height: calc(100vh - 44px);
-    /* padding-bottom: 44px; */
 }
 
 .content-app {
     height: calc(100vh - 124px);
-}
-
-.app-safe-area {
-    padding-bottom: 124px;
 }

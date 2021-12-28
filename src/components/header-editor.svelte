@@ -8,7 +8,7 @@
     let prevHeaders = ''
 
     const onEditorReady: EditorConfig['handleCustomEvent'] = ({
-        detail: { editor, updateEditor }
+        detail: { Monaco, editor, updateEditor }
     }) => {
         updateEditor($fetchStorage.headers, 'json')
 
@@ -26,18 +26,9 @@
             saveFetchStorage()
         })
 
-        editor.onKeyDown(({ browserEvent: { key, metaKey } }) => {
-            if (metaKey && key === 'Enter') {
-                const pos = editor.getPosition()
-
-                $fetchStorage.headers = editor.getValue()
-
-                window.dispatchEvent(new CustomEvent('fetch-request'))
-
-                requestAnimationFrame(() => {
-                    editor.setPosition(pos)
-                })
-            }
+        editor.addCommand(Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.Enter, () => {
+            $fetchStorage.headers = editor.getValue()
+            window.dispatchEvent(new CustomEvent('fetch-request'))            
         })
     }
 

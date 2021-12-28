@@ -13,7 +13,9 @@ export interface EditorConfig {
     config: {
         Monaco: typeof MonacoEditor
         editor: monaco.editor.IStandaloneCodeEditor
-        updateEditor: (body: string, langage?: string) => void
+        updateEditor: (body: string, langage?: string, config?: {
+            overwrite: boolean
+        }) => void
     }
     onEvent: (config: EditorConfig['config']) => void
     handleCustomEvent: (event: { detail: EditorConfig['config'] }) => void
@@ -26,18 +28,31 @@ const editor = (
     let editor: monaco.editor.IStandaloneCodeEditor
     let Monaco: typeof MonacoEditor
 
+    let prevBody: string
     let prevLanguage: string
 
-    const updateEditor = (body: string, language = 'json') => {
+    const updateEditor: EditorConfig['config']['updateEditor'] = (body, language = 'json', { overwrite } = {
+        overwrite: false
+    }) => {
         if (!editor) return
 
-        let position = editor.getPosition()
+        if(overwrite)
+            setEditor(body, language)
+        else {
+            if(prevBody !== body) editor.setValue(body)
+            if(prevLanguage !== language) Monaco.editor.setModelLanguage(editor.getModel(), language)
+        }
 
-        if (prevLanguage === language) editor.setValue(body)
-        else editor.setModel(Monaco.editor.createModel(body, language))
-
+        prevBody = body
         prevLanguage = language
-        editor.setPosition(position)
+    }
+
+    const setEditor = (body: string, language = 'json') => {
+        if (!editor) return
+
+        console.log("SET")
+
+        editor.setModel(Monaco.editor.createModel(body, language))
     }
 
     onMount(async () => {
@@ -88,7 +103,8 @@ const editor = (
                     // @ts-ignore
                     Monaco,
                     editor,
-                    updateEditor
+                    updateEditor,
+                    setEditor
                 }
             })
         )

@@ -1,5 +1,6 @@
 <script lang="ts">
     import fetchStorage from '../store/fetch'
+    import controller from '../store/controller';
     import { saveFetchStorage } from '../store/deriveSave'
 
     import editor from '../lib/editor'
@@ -8,14 +9,29 @@
     import { detectLanguage } from '../lib/language'
 
     let editorDebounce: number
+    let prevIndex: number
+    let requestEditorChange = false
 
     const onEditorReady: EditorConfig['handleCustomEvent'] = ({
-        detail: { editor, updateEditor }
+        detail: { Monaco, editor, updateEditor }
     }) => {
+        prevIndex = +$controller.index
+
         fetchStorage.subscribe(async ({ body, language }) => {
             if (!editor) return
 
-            updateEditor(body, language)
+            updateEditor(body, language, {
+                overwrite: requestEditorChange
+            })
+            requestEditorChange = false
+        })
+
+        controller.subscribe(({ index }) => {
+            if(index === prevIndex) return
+
+            console.log(index, prevIndex)
+
+            requestEditorChange = true
         })
 
         updateEditor($fetchStorage.body, $fetchStorage.language)
@@ -41,18 +57,12 @@
             saveFetchStorage()
         })
 
-        editor.onKeyDown(
-            ({ browserEvent: { key, metaKey, stopPropagation } }) => {
-                if (metaKey && key === 'Enter') {
-                    const pos = editor.getPosition()
-
-                    $fetchStorage.body = editor.getValue()
-                    window.dispatchEvent(new CustomEvent('fetch-request'))
-                }
-            }
-        )
+        editor.addCommand(Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.Enter, () => {
+            $fetchStorage.body = editor.getValue()
+            window.dispatchEvent(new CustomEvent('fetch-request'))            
+        })
     }
-
+    
     const onEditorDestroy = () => {
         saveFetchStorage()
     }

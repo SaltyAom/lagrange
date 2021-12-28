@@ -12,8 +12,10 @@
     let rightW
 
     onMount(() => {
-        leftW = (containerW - splitterWidth) / 2
-        rightW = (containerW - splitterWidth) / 2
+        requestAnimationFrame(() => {
+            leftW = ((containerW || window.innerWidth) - splitterWidth) / 2
+            rightW = ((containerW || window.innerWidth) - splitterWidth) / 2
+        })
     })
 
     function handleMouseMove(e) {

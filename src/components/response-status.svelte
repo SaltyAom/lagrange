@@ -13,7 +13,7 @@
 
 {#if localError}
     <section
-        class="z-10 absolute top-0 left-0 flex flex-col justify-center items-center gap-2 w-full h-full bg-white dark:bg-gray-800 app-safe-area"
+        class="z-10 absolute top-0 left-0 flex flex-col justify-center items-center gap-2 w-full h-full bg-white dark:bg-gray-800"
     >
         <img
             class="w-36 h-36 object-contain object-center"
@@ -37,7 +37,7 @@
 {/if}
 {#if $fetchResponse.isLoading}
     <div
-        class="z-20 absolute top-0 left-0 flex flex-col justify-center items-center w-full h-full text-gray-900 dark:text-gray-300 app-safe-area bg-white dark:bg-gray-800"
+        class="z-20 absolute top-0 left-0 flex flex-col justify-center items-center w-full h-full text-gray-900 dark:text-gray-300 bg-white dark:bg-gray-800"
     >
         <img
             class="w-36 h-36 mb-4 object-contain object-center"
