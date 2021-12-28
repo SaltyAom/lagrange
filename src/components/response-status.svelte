@@ -27,7 +27,10 @@
             {:else if localError.includes('Malform variables')}
                 Invalid JSON format in <button>Variables</button>
             {:else if localError === 'Unable to resolve hostname'}
-                Make sure you're connected to internet and pointing to the right URL
+                Make sure you're connected to internet and pointing to the right
+                URL
+            {:else if localError === 'Malform Json body'}
+                Invalid JSON format in <button>Body</button>
             {/if}
         </p>
     </section>

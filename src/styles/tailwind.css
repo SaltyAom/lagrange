@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, .editor-scrollable *, #splitter * {
+    -webkit-user-select: all !important;
+    -moz-user-select: all !important;
+    -ms-user-select: all !important;
+    user-select: all !important; 
+}
+
+#welcome {
+    height: calc(100vh - 44px);
+    /* padding-bottom: 44px; */
+}
+
+.content-app {
+    height: calc(100vh - 124px);
+}
+
 .app-safe-area {
     padding-bottom: 124px;
 }

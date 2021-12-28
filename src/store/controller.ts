@@ -11,11 +11,7 @@ export interface Controller {
 
 export const defaultController: Controller = {
     index: 0,
-    tabs: [
-        {
-            label: 'New Tab'
-        }
-    ]
+    tabs: []
 }
 
 const controller = writable<Controller>(defaultController)

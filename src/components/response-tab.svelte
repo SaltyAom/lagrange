@@ -18,7 +18,7 @@
     const getColor = (status: number) => {
         let value = `${status}`
 
-        return colorMap[value[0]] || 'text-transparent'
+        return colorMap[value[0]] || '!text-transparent'
     }
 </script>
 

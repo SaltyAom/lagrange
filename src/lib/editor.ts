@@ -31,18 +31,13 @@ const editor = (
     const updateEditor = (body: string, language = 'json') => {
         if (!editor) return
 
-        requestAnimationFrame(() => {
-            let position = editor.getPosition()
+        let position = editor.getPosition()
 
-            if (prevLanguage === language) editor.setValue(body)
-            else editor.setModel(Monaco.editor.createModel(body, language))
+        if (prevLanguage === language) editor.setValue(body)
+        else editor.setModel(Monaco.editor.createModel(body, language))
 
-            prevLanguage = language
-
-            requestAnimationFrame(() => {
-                editor.setPosition(position)
-            })
-        })
+        prevLanguage = language
+        editor.setPosition(position)
     }
 
     onMount(async () => {

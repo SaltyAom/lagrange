@@ -5,7 +5,7 @@
     import response, { defaultResponse } from '../store/response'
     import { movePersistedFile, saveFetchStorage } from '../store/deriveSave'
 
-    import { PlusIcon, XIcon } from 'svelte-feather-icons'
+    import { PlusIcon, XIcon, HomeIcon } from 'svelte-feather-icons'
 
     const newTab = () => {
         controller.update((v) => ({
@@ -103,6 +103,13 @@
     id="tab"
     class="flex items-center gap-2 w-full h-11 px-2 py-1.5 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 overflow-y-hidden"
 >
+    <button
+        on:click|preventDefault={setActiveTab(-1)}
+        class=" dark:text-white w-8 h-8 p-1.5 bg-white dark:bg-gray-700 rounded border dark:border-gray-700"
+    >
+        <HomeIcon />
+    </button>
+
     {#each $controller.tabs as tab, index (index)}
         {#if index === $controller.index}
             <div

@@ -4,6 +4,8 @@
     import useDeriveSave from './store/deriveSave'
     import controller from './store/controller'
 
+    import Welcome from './components/welcome.svelte'
+
     import Controller from './components/controller.svelte'
     import Tab from './components/tab.svelte'
     import SplitPane from './components/split-pane.svelte'
@@ -33,7 +35,14 @@
 <Tab />
 <Controller class={hideIfInvalid} />
 
-<main class="flex">
+<Welcome
+    class={$controller.index < 0 ||
+    $controller.index > $controller.tabs.length - 1
+        ? ''
+        : 'hidden'}
+/>
+
+<main class="content-app flex">
     <SplitPane class={hideIfInvalid} minWidth={50}>
         <main class="flex flex-col" slot="left">
             <SubTab class={hideIfInvalid} />
@@ -50,7 +59,9 @@
                 <ResponseStatus />
 
                 <Response class={$responsePage !== 'body' ? 'hidden' : ''} />
-                <ResponseHeader class={$responsePage !== 'headers' ? 'hidden' : ''} />
+                <ResponseHeader
+                    class={$responsePage !== 'headers' ? 'hidden' : ''}
+                />
             </div>
         </section>
     </SplitPane>

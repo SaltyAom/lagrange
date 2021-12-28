@@ -62,5 +62,5 @@
     use:editor
     on:editorReady={onEditorReady}
     on:editorDestroy={onEditorDestroy}
-    class={`w-full h-screen dark:text-white ${$$props.class}`}
+    class={`content-app w-full h-screen dark:text-white ${$$props.class}`}
 />

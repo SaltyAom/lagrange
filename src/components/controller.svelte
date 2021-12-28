@@ -91,19 +91,33 @@
                     })
                 }
 
-            const body =
-                $fetchStorage.language === 'graphql'
-                    ? JSON.stringify({
-                          query: $fetchStorage.body
-                              .split('\n')
-                              .map((line) => line.split('#')[0])
-                              .join(''),
-                          variables
-                      })
-                    : JSON.stringify($fetchStorage.body)
+            try {
+                if ($fetchStorage.type === 'form') {
+                    options.body = Body.form(JSON.parse($fetchStorage.body))
+                    options.headers['Content-Type'] =
+                        'application/x-www-form-urlencoded'
+                } else {
+                    const body =
+                        $fetchStorage.language === 'graphql'
+                            ? {
+                                  query: $fetchStorage.body
+                                      .split('\n')
+                                      .map((line) => line.split('#')[0])
+                                      .join(''),
+                                  variables
+                              }
+                            : JSON.parse($fetchStorage.body)
 
-            options.body = Body.text(body)
-            options.headers['Content-Type'] = 'application/json'
+                    options.body = Body.json(body)
+                    options.headers['Content-Type'] = 'application/json'
+                }
+            } catch (err) {
+                return fetchResponse.set({
+                    ...defaultResponse,
+                    error: 'Lagrange Error: Malform Json body',
+                    isLoading: false
+                })
+            }
         }
 
         try {

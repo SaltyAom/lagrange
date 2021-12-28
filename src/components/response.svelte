@@ -26,5 +26,5 @@
 <div
     use:editor={{ readOnly: true }}
     on:editorReady={onEditorReady}
-    class={`w-full h-screen dark:text-white ${$$props.class}`}
+    class={`content-app w-full h-screen dark:text-white ${$$props.class}`}
 />

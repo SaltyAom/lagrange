@@ -10,6 +10,7 @@ export type Method =
     | 'CREATE'
 
 export type Language = 'json' | 'graphql' | 'text' | 'html'
+export type FetchType = 'body' | 'form'
 
 export interface FetchStorage {
     url: string
@@ -19,6 +20,7 @@ export interface FetchStorage {
     response: string
     headers: string
     variables: string
+    type: FetchType
 }
 
 export const defaultFetchStorage: FetchStorage = {
@@ -28,8 +30,11 @@ export const defaultFetchStorage: FetchStorage = {
     language: 'json',
     response: '',
     headers: '{}',
-    variables: '{}'
+    variables: '{}',
+    type: 'body'
 }
+
+export const typeOptions: FetchType[] = ['body', 'form']
 
 const fetchStorage = writable<FetchStorage>(defaultFetchStorage)
 
