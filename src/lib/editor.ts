@@ -8,16 +8,17 @@ export interface EditorConfig {
     config: {
         Monaco: typeof MonacoEditor
         editor: monaco.editor.IStandaloneCodeEditor
-        updateEditor: (
-            body: string,
-            langage?: string,
-            config?: {
-                overwrite: boolean
-            }
-        ) => void
+        updateEditor: EditorConfig['updateEditor']
     }
     onEvent: (config: EditorConfig['config']) => void
     handleCustomEvent: (event: { detail: EditorConfig['config'] }) => void
+    updateEditor: (
+        body: string,
+        langage?: string,
+        config?: {
+            overwrite: boolean
+        }
+    ) => void
 }
 
 const editor = (
@@ -81,6 +82,7 @@ const editor = (
             // @ts-ignore
             'bracketPairColorization.enabled': true,
             tabSize: 2,
+            useShadowDOM: true,
             ...config
         })
 

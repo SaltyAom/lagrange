@@ -8,13 +8,22 @@
     import type { EditorConfig } from '../lib/editor'
     import { detectLanguage } from '../lib/language'
 
+    import { buildClientSchema, printSchema } from 'graphql'
+    import type { IntrospectionQuery } from 'graphql'
+
     import { initializeMode } from 'monaco-graphql/esm/initializeMode'
+
+    import { FileIcon, XIcon } from 'svelte-feather-icons'
+    import HeightResize from './height-resize.svelte'
 
     let editorDebounce: number
     let requestEditorChange = false
 
     let prevIndex: number
     let prevUrl: string
+    let schema: IntrospectionQuery | null
+
+    let viewSchema = false
 
     const gqlLanguageService = initializeMode()
 
@@ -36,11 +45,13 @@
         fetchStorage.subscribe(async ({ url }) => {
             if (url === prevUrl) return
 
+            schema = null
+            viewSchema = false
             prevUrl = url
 
             try {
-
-                let schema = await fetchSchema(url)
+                let _schema = await fetchSchema(url)
+                schema = _schema
 
                 gqlLanguageService.setSchemaConfig([
                     {
@@ -49,6 +60,11 @@
                         introspectionJSON: schema
                     }
                 ])
+
+                updateGqlDocEditor(
+                    printSchema(buildClientSchema(schema)),
+                    'graphql'
+                )
             } catch (err) {
                 gqlLanguageService.setSchemaConfig([])
             }
@@ -90,7 +106,48 @@
     const onEditorDestroy = () => {
         saveFetchStorage()
     }
+
+    let updateGqlDocEditor: EditorConfig['updateEditor']
+
+    const onSchemaViewerReady: EditorConfig['handleCustomEvent'] = ({
+        detail: { updateEditor }
+    }) => {
+        updateGqlDocEditor = updateEditor
+    }
+
+    const toggleSchema = () => {
+        viewSchema = !viewSchema
+    }
 </script>
+
+<HeightResize
+    class={`absolute z-20 bottom-0 flex flex-col w-full h-1/2 bg-white dark:bg-gray-800 ${
+        viewSchema ? '' : 'hidden'
+    }`}
+>
+    <div
+        class="w-full h-full"
+        use:editor={{
+            readOnly: true
+        }}
+        on:editorReady={onSchemaViewerReady}
+    />
+</HeightResize>
+
+{#if schema}
+    <button
+        class="z-20 absolute bottom-3 right-6 flex justify-center items-center text-gray-500 dark:text-gray-300 bg-white dark:bg-gray-700 w-8 h-8 p-1.5 rounded-lg shadow-lg border dark:border-gray-700"
+        title="View GraphQL Schema"
+        aria-label="View GraphQL Schema"
+        on:click={toggleSchema}
+    >
+        {#if viewSchema}
+            <XIcon strokeWidth={1.5} />
+        {:else}
+            <FileIcon strokeWidth={1.5} />
+        {/if}
+    </button>
+{/if}
 
 <section
     use:editor

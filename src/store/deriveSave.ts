@@ -15,7 +15,7 @@ import type { Controller } from './controller'
 export const saveFetchStorage = async (
     index: number = get(controller).index
 ) => {
-    console.log("Save", index, get(fetchStorage))
+    // console.log("Save", index, get(fetchStorage))
 
     await writeFile(
         {

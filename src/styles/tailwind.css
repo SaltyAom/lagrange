@@ -22,6 +22,10 @@ input, textarea, .editor-scrollable *, #splitter * {
     height: calc(100vh - 44px);
 }
 
+.app-shell {
+    height: calc(100vh - 88px);
+}
+
 .content-app {
     height: calc(100vh - 124px);
 }

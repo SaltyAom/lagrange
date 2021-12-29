@@ -1,62 +1,39 @@
 <script>
-    // @see https://svelte.dev/repl/b467a4787de3487fbe5c4508e8221268?version=3.42.1
     import { onMount } from 'svelte'
-    export let minWidth = 30
+
     export let splitterWidth = 10
-    let mousePos
-    let delta = 0
     let isMouseDown = false
-    let containerW
-    let initialL
     let leftW
     let rightW
 
     onMount(() => {
         requestAnimationFrame(() => {
-            leftW = ((containerW || window.innerWidth) - splitterWidth) / 2
-            rightW = ((containerW || window.innerWidth) - splitterWidth) / 2
+            leftW = (window.innerWidth - splitterWidth) / 2
+            rightW = (window.innerWidth - splitterWidth) / 2
         })
     })
 
-    function handleMouseMove(e) {
-        if (isMouseDown) {
-            delta = mousePos - e.clientX
-            leftW =
-                initialL - delta <= minWidth
-                    ? minWidth
-                    : initialL - delta >= containerW - splitterWidth - minWidth
-                    ? containerW - splitterWidth - minWidth
-                    : initialL - delta
+    const handleMouseMove = (e) => {
+        if (!isMouseDown) return
 
-            rightW = containerW - leftW - splitterWidth
-        }
+        leftW = e.clientX
+        rightW = Math.abs(window.innerWidth - leftW - splitterWidth)
     }
 
-    function handleMouseDown(e) {
-        mousePos = e.clientX
-        initialL = leftW
+    const handleMouseDown = () => {
         isMouseDown = true
     }
 
-    function handleMouseUp() {
+    const handleMouseUp = () => {
         isMouseDown = false
-    }
-
-    $: if (
-        leftW &&
-        rightW & containerW &&
-        leftW + rightW !== containerW - splitterWidth
-    ) {
-        const leftRatio = leftW / (leftW + rightW - splitterWidth / 2)
-        leftW = containerW * leftRatio - splitterWidth / 2
-        rightW = containerW - leftW - splitterWidth / 2
     }
 </script>
 
 <svelte:window on:mousemove={handleMouseMove} on:mouseup={handleMouseUp} />
 <section
-    bind:clientWidth={containerW}
-    class={`flex w-full h-full ${$$props.class || ''} ${isMouseDown ? 'disable-select' : ''}`}
+    class={`flex w-full h-full ${$$props.class || ''} ${
+        isMouseDown ? 'disable-select' : ''
+    }`}
 >
     <div class="relative" style="width:{leftW}px">
         <slot name="left" />

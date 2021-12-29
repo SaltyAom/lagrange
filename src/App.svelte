@@ -42,7 +42,7 @@
         : 'hidden'}
 />
 
-<main class="content-app flex">
+<main class="app-shell flex">
     <SplitPane class={hideIfInvalid} minWidth={50}>
         <main class="flex flex-col" slot="left">
             <SubTab class={hideIfInvalid} />

@@ -5,7 +5,11 @@ import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
-        svelte(),
+        svelte({
+            compilerOptions: {
+                generate: 'dom'
+            }
+        }),
         monacoEditorPlugin.default({
             languageWorkers: ['html', 'json', 'editorWorkerService'],
             customWorkers: [
