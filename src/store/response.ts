@@ -5,7 +5,8 @@ export interface FetchResponse {
     response: string
     error: string
     status: number
-    headers: {}
+    headers: {},
+    duration: number
 }
 
 export const defaultResponse: FetchResponse = {
@@ -13,7 +14,8 @@ export const defaultResponse: FetchResponse = {
     response: '',
     error: '',
     status: 0,
-    headers: {}
+    headers: {},
+    duration: 0
 }
 
 const fetchResponse = writable<FetchResponse>(defaultResponse)

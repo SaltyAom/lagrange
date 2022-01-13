@@ -18,7 +18,9 @@
             if (preview === response) return
 
             preview = response
-            updateEditor(response, detectLanguage(response))
+            updateEditor(response, detectLanguage(response), {
+                overwrite: true
+            })
         })
     }
 </script>

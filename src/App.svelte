@@ -20,7 +20,8 @@
     import ResponseHeader from './components/response-header.svelte'
     import ResponseStatus from './components/response-status.svelte'
 
-    import './styles/tailwind.css'
+    import 'virtual:windi.css'
+    import './styles/global.css'
 
     $: hideIfInvalid =
         $controller.index < 0 ||
@@ -43,7 +44,7 @@
 />
 
 <main class="app-shell flex">
-    <SplitPane class={hideIfInvalid} minWidth={50}>
+    <SplitPane class={hideIfInvalid}>
         <main class="flex flex-col" slot="left">
             <SubTab class={hideIfInvalid} />
             <Editor class={$page !== 'body' ? 'hidden' : ''} />

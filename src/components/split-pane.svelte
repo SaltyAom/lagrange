@@ -8,16 +8,16 @@
 
     onMount(() => {
         requestAnimationFrame(() => {
-            leftW = (window.innerWidth - splitterWidth) / 2
-            rightW = (window.innerWidth - splitterWidth) / 2
+            leftW = 50
+            rightW = 50
         })
     })
 
     const handleMouseMove = (e) => {
         if (!isMouseDown) return
 
-        leftW = e.clientX
-        rightW = Math.abs(window.innerWidth - leftW - splitterWidth)
+        leftW = e.clientX / window.innerWidth * 100
+        rightW = 100 - leftW
     }
 
     const handleMouseDown = () => {
@@ -35,7 +35,7 @@
         isMouseDown ? 'disable-select' : ''
     }`}
 >
-    <div class="relative" style="width:{leftW}px">
+    <div class="relative" style="width:{leftW}%">
         <slot name="left" />
         {#if isMouseDown}
             <div class="window-hook" />
@@ -49,7 +49,7 @@
     >
         <div class="w-[1px] h-full bg-gray-300 dark:bg-gray-600 mx-auto" />
     </div>
-    <div class="relative" style="width:{rightW}px">
+    <div class="relative" style="width:{rightW}%">
         <slot name="right" />
         {#if isMouseDown}
             <div class="window-hook" />
@@ -62,7 +62,7 @@
         cursor: col-resize;
     }
 
-    div.window-hook {
+    .window-hook {
         height: 100%;
         width: 100%;
         z-index: 5000;

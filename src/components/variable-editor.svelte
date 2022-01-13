@@ -27,7 +27,7 @@
         })
 
         editor.addCommand(Monaco.KeyMod.CtrlCmd | Monaco.KeyCode.Enter, () => {
-            $fetchStorage.headers = editor.getValue()
+            $fetchStorage.variables = editor.getValue()
             window.dispatchEvent(new CustomEvent('fetch-request'))
         })
     }

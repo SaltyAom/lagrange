@@ -13,7 +13,9 @@
             if (preview === headers) return
 
             preview = JSON.stringify(headers, null, 2)
-            updateEditor(status && preview ? preview : '', 'json')
+            updateEditor(status && preview ? preview : '', 'json', {
+                overwrite: true
+            })
         })
     }
 </script>

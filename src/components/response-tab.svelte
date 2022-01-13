@@ -37,20 +37,27 @@
         {$response.status || '200'}
     </h6>
     <div class="w-[1px] h-6 mx-2 bg-gray-300 dark:bg-gray-600" />
-    {#each responsePages as tab (tab)}
-        {#if tab === $responsePage}
-            <button
-                class="dark:text-gray-300 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded capitalize whitespace-nowrap"
-            >
-                {tab}
-            </button>
-        {:else}
-            <button
-                class="px-2 py-1 text-gray-400 dark:text-gray-600 capitalize whitespace-nowrap"
-                on:click={setActiveTab(tab)}>{tab}</button
-            >
+    <nav class="flex items-center flex-1 h-full">
+        {#each responsePages as tab (tab)}
+            {#if tab === $responsePage}
+                <button
+                    class="dark:text-gray-300 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded capitalize whitespace-nowrap"
+                >
+                    {tab}
+                </button>
+            {:else}
+                <button
+                    class="px-2 py-1 text-gray-400 dark:text-gray-600 capitalize whitespace-nowrap"
+                    on:click={setActiveTab(tab)}>{tab}</button
+                >
+            {/if}
+        {/each}
+    </nav>
+    <h6 class="text-gray-400 dark:text-gray-500 cursor-default">
+        {#if $response.duration}
+            {($response.duration / 1000).toFixed(3)} s
         {/if}
-    {/each}
+    </h6>
 </aside>
 
 <style>

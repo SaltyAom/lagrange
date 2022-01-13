@@ -7,5 +7,5 @@ export default {
         typescript: {
             tsconfigFile: './tsconfig.json'
         }
-    })
+    }),
 }

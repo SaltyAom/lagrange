@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 * {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -28,4 +24,12 @@ input, textarea, .editor-scrollable *, #splitter * {
 
 .content-app {
     height: calc(100vh - 124px);
+}
+
+.cursor-row-resize {
+    cursor: row-resize;
+}
+
+.cursor-col-resize {
+    cursor: col-resize;
 }

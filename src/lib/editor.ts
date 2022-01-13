@@ -34,7 +34,7 @@ const editor = (
     const updateEditor: EditorConfig['config']['updateEditor'] = (
         body,
         language = 'json',
-        { overwrite } = {
+        { overwrite = false } = {
             overwrite: false
         }
     ) => {
@@ -42,7 +42,14 @@ const editor = (
 
         if (overwrite) setEditor(body, language)
         else {
-            if (prevBody !== body) editor.setValue(body)
+            if (prevBody !== body)
+                editor.executeEdits(null, [
+                    {
+                        text: body,
+                        range: editor.getModel().getFullModelRange()
+                    }
+                ])
+
             if (prevLanguage !== language)
                 Monaco.editor.setModelLanguage(editor.getModel(), language)
         }

@@ -120,6 +120,8 @@
             }
         }
 
+        const since = performance.now()
+
         try {
             const response = await fetch(url, options)
 
@@ -130,7 +132,8 @@
                 response: trySerialize(value as string),
                 error: null,
                 headers: responseHeaders,
-                status
+                status,
+                duration: performance.now() - since
             })
         } catch (error) {
             if (
@@ -141,12 +144,14 @@
                 return fetchResponse.set({
                     ...defaultResponse,
                     isLoading: false,
-                    error: 'Lagrange Error: Unable to resolve hostname'
+                    error: 'Lagrange Error: Unable to resolve hostname',
+                    duration: performance.now() - since
                 })
 
             fetchResponse.set({
                 ...defaultResponse,
-                error: error?.toString()
+                error: error?.toString(),
+                duration: performance.now() - since
             })
         }
     }
