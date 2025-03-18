@@ -29,3 +29,21 @@ nav,
 main {
 	@apply cursor-default select-none;
 }
+
+.highlight-focus:focus {
+	animation: highlight-focus .3s ease-in-out;
+}
+
+@keyframes highlight-focus {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.175);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}

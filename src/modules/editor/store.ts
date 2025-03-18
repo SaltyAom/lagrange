@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 
 import { fetch } from '@tauri-apps/plugin-http'
 
+import type { EditorView } from '@codemirror/view'
+
 export const editorTypes = [
 	'body',
 	'headers',
@@ -61,7 +63,27 @@ const headerToObject = (headers: Headers) => {
 	return obj
 }
 
-export const useEditorStore = defineStore('counter', {
+export interface EditorInstance {
+	request: EditorView | null
+	response: EditorView | null
+}
+
+export const useEditorInstance = defineStore('editorInstance', {
+	state: () =>
+		({
+			request: null,
+			response: null
+		}) as EditorInstance,
+	actions: {
+		instance(name: keyof EditorInstance, instance: EditorView | null) {
+			if (name === 'request') return void (this.request = instance as any)
+			if (name === 'response')
+				return void (this.response = instance as any)
+		}
+	}
+})
+
+export const useEditorStore = defineStore('editor', {
 	state: () => ({
 		index: 0,
 		editors: <Editor[]>[defaultEditor],
@@ -179,7 +201,7 @@ export const useEditorStore = defineStore('counter', {
 						),
 						status: response.status,
 						ellapsed,
-						timestamp: timestamp = Date.now()
+						timestamp: (timestamp = Date.now())
 					}
 				})
 			} catch {

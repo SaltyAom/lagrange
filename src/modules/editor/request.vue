@@ -6,9 +6,11 @@ import { RadioGroupRoot } from 'radix-vue'
 import Editor from './editor.vue'
 import Chip from '../../components/chip.vue'
 
-import { useEditorStore, editorTypes } from './store'
+import { useEditorStore, useEditorInstance, editorTypes } from './store'
 
 const editor = useEditorStore()
+const editorInstance = useEditorInstance()
+
 const type = ref<editorTypes[number]>(editorTypes[0])
 
 const onInput = (value: string) => {
@@ -17,6 +19,18 @@ const onInput = (value: string) => {
 			[type.value]: value
 		}
 	})
+}
+
+const focusRequestEditor = () => {
+	editorInstance.request?.focus()
+}
+
+const focusResponseEditor = () => {
+	editorInstance.response?.focus()
+}
+
+const toolbar = () => {
+	document.getElementById('request-toolbar')?.focus()
 }
 </script>
 
@@ -31,16 +45,20 @@ const onInput = (value: string) => {
 			:value="item"
 			:active="type === item"
 			:id="type === item ? 'request-toolbar' : undefined"
+			up-element="url"
+			:down-element="focusRequestEditor"
 		>
 			{{ item }}
 		</Chip>
 	</RadioGroupRoot>
 	<Editor
+		name="request"
 		:id="type + '-request'"
 		:initial="editor.active.request[type]"
 		:onInput="onInput"
 		shortcut="e"
 		shortcutMeta
-		previousElement="request-toolbar"
+		:up-element="toolbar"
+		:right-element="focusResponseEditor"
 	/>
 </template>

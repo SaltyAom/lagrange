@@ -21,7 +21,7 @@ watch(isPinned, (value) => {
 })
 
 onMounted(() => {
-	window.addEventListener('keydown', handleKey, true)
+	document.addEventListener('keydown', handleKey, true)
 })
 
 onUnmounted(() => {
@@ -45,7 +45,7 @@ const handleKey = (e: KeyboardEvent) => {
 		data-tauri-drag-region
 	>
 		<button
-			class="absolute left-18.5 group flex justify-center items-center w-7 h-7 mt-1 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer"
+			class="absolute left-18.5 group flex justify-center items-center w-7 h-7 mt-1 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer highlight-focus"
 			:class="{
 				'!bg-violet-500/15 !border-violet-500/25': false
 			}"
@@ -59,7 +59,7 @@ const handleKey = (e: KeyboardEvent) => {
 		<URL />
 		<section class="absolute right-1 flex flex-row-reverse mt-1">
 			<Toggle
-				class="group flex justify-center items-center w-7 h-7 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer"
+				class="group flex justify-center items-center w-7 h-7 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer highlight-focus"
 				v-model:pressed="isPinned"
 				:class="{
 					'!bg-violet-500/15 !border-violet-500/25': isPinned
@@ -78,7 +78,7 @@ const handleKey = (e: KeyboardEvent) => {
 			<SplitterPanel
 				class="relative flex flex-col h-[calc(100vh-2.25rem)] pt-1 pl-1 overflow-hidden"
 				:style="{
-					transition: isFocus ? 'flex 0.45s var(--ease-out-expo)' : ''
+					transition: isFocus ? 'flex 0.4s var(--ease-out-expo)' : ''
 				}"
 			>
 				<Request />
@@ -96,7 +96,7 @@ const handleKey = (e: KeyboardEvent) => {
 			<SplitterPanel
 				class="flex flex-col h-[calc(100vh-2.25rem)] pt-1"
 				:style="{
-					transition: isFocus ? 'flex 0.45s var(--ease-out-expo)' : ''
+					transition: isFocus ? 'flex 0.4s var(--ease-out-expo)' : ''
 				}"
 			>
 				<article

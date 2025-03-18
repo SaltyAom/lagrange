@@ -7,6 +7,8 @@ import { EditorView, keymap } from '@codemirror/view'
 import { json } from '@codemirror/lang-json'
 import { defaultKeymap } from '@codemirror/commands'
 
+import { useEditorInstance, type EditorInstance } from './store'
+
 // import * as prettier from 'prettier/standalone'
 // import * as parserBabel from 'prettier/parser-babel'
 // import * as prettierPluginEstree from 'prettier/plugins/estree'
@@ -20,17 +22,39 @@ const props = defineProps<{
 	onInput?(doc: string): void
 	shortcut?: string
 	shortcutMeta?: boolean
-	previousElement?: string
+	upElement?: string | (() => unknown)
+	downElement?: string | (() => unknown)
+	leftElement?: string | (() => unknown)
+	rightElement?: string | (() => unknown)
+	name?: keyof EditorInstance
 }>()
 
 let view: EditorView | undefined
 
-onMounted(() => {
-	const up = defaultKeymap.find((x) => x.key === 'ArrowUp')
+const editorInstance = useEditorInstance()
 
-	const previousElement = props.previousElement
-		? document.getElementById(props.previousElement)
-		: null
+onMounted(() => {
+	const unwrap = (value?: string | (() => unknown)) => {
+		switch (typeof value) {
+			case 'function':
+				return value
+
+			case 'string':
+				return document.getElementById(value)
+		}
+
+		return null
+	}
+
+	const upElement = unwrap(props.upElement)
+	const downElement = unwrap(props.downElement)
+	const leftElement = unwrap(props.leftElement)
+	const rightElement = unwrap(props.rightElement)
+
+	const up = defaultKeymap.find((x) => x.key === 'ArrowUp')
+	const down = defaultKeymap.find((x) => x.key === 'ArrowDown')
+	const left = defaultKeymap.find((x) => x.key === 'ArrowLeft')
+	const right = defaultKeymap.find((x) => x.key === 'ArrowRight')
 
 	const extensions = [
 		keymap.of([
@@ -43,13 +67,68 @@ onMounted(() => {
 				...up,
 				key: 'ArrowUp',
 				run(view) {
-					if (previousElement && view.state.selection.main.to === 0) {
-						previousElement.focus()
+					if (upElement && view.state.selection.main.to === 0) {
+						if (typeof upElement === 'function') upElement()
+						else upElement.focus()
 
 						return true
 					}
 
 					if (up?.run) up.run(view)
+
+					return true
+				}
+			},
+			{
+				...down,
+				key: 'ArrowDown',
+				run(view) {
+					if (
+						downElement &&
+						view.state.selection.main.from === view.state.doc.length
+					) {
+						if (typeof downElement === 'function') downElement()
+						else downElement.focus()
+
+						return true
+					}
+
+					if (down?.run) down.run(view)
+
+					return true
+				}
+			},
+			{
+				...left,
+				key: 'ArrowLeft',
+				run(view) {
+					if (leftElement && view.state.selection.main.from === 0) {
+						if (typeof leftElement === 'function') leftElement()
+						else leftElement.focus()
+
+						return true
+					}
+
+					if (left?.run) left.run(view)
+
+					return true
+				}
+			},
+			{
+				...right,
+				key: 'ArrowRight',
+				run(view) {
+					if (
+						rightElement &&
+						view.state.selection.main.to === view.state.doc.length
+					) {
+						if (typeof rightElement === 'function') rightElement()
+						else rightElement.focus()
+
+						return true
+					}
+
+					if (right?.run) right.run(view)
 
 					return true
 				}
@@ -79,8 +158,10 @@ onMounted(() => {
 		parent: document.getElementById(props.id)!
 	})
 
+	if (props.name) editorInstance.instance(props.name, view)
+
 	if (props.shortcut)
-		window.addEventListener('keydown', (event) => {
+		document.addEventListener('keydown', (event) => {
 			const isMeta =
 				!props.shortcutMeta || (props.shortcutMeta && event.metaKey)
 
@@ -106,6 +187,8 @@ watch(
 )
 
 onUnmounted(() => {
+	if (props.name) editorInstance.instance(props.name, null)
+
 	view?.destroy()
 })
 

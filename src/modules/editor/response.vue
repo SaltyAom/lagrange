@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-import { useEditorStore } from './store'
+import { useEditorStore, useEditorInstance } from './store'
 
 import { RadioGroupRoot } from 'radix-vue'
 
@@ -9,6 +9,7 @@ import Editor from './editor.vue'
 import Chip from '../../components/chip.vue'
 
 const editor = useEditorStore()
+const editorInstance = useEditorInstance()
 
 const types = ['body', 'headers'] as const
 const type = ref<(typeof types)[number]>(types[0])
@@ -26,6 +27,18 @@ onUnmounted(() => {
 })
 
 const doc = computed(() => editor.active.response[type.value])
+
+const focusRequestEditor = () => {
+	editorInstance.request?.focus()
+}
+
+const focusResponseEditor = () => {
+	editorInstance.response?.focus()
+}
+
+const focusToolbar = () => {
+	document.getElementById('response-toolbar')?.focus()
+}
 </script>
 
 <template>
@@ -50,6 +63,8 @@ const doc = computed(() => editor.active.response[type.value])
 				:value="item"
 				:active="type === item"
 				:id="type === item ? 'response-toolbar' : undefined"
+				up-element="url"
+				:down-element="focusResponseEditor"
 			>
 				{{ item }}
 			</Chip>
@@ -68,6 +83,7 @@ const doc = computed(() => editor.active.response[type.value])
 		<h1 class="text-2xl font-mono text-gray-500/50">Lagrange</h1>
 	</div>
 	<Editor
+		name="response"
 		readOnly
 		:id="type + '-response'"
 		:class="
@@ -78,6 +94,7 @@ const doc = computed(() => editor.active.response[type.value])
 		:doc="doc"
 		shortcut="d"
 		shortcutMeta
-		previousElement="response-toolbar"
+		:up-element="focusToolbar"
+		:left-element="focusRequestEditor"
 	/>
 </template>

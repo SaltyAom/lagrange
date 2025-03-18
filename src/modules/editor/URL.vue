@@ -2,7 +2,7 @@
 import { ref, computed, useTemplateRef, onMounted, onUnmounted } from 'vue'
 import { Command } from 'vue-command-palette'
 
-import { Motion } from 'motion-v'
+import { AnimatePresence, Motion } from 'motion-v'
 
 import { useEditorStore } from './store'
 
@@ -35,7 +35,7 @@ const methodElement = useTemplateRef<HTMLSelectElement>('method-element')
 const ghostURL = useTemplateRef<HTMLElement>('ghost-url')
 
 onMounted(() => {
-	window.addEventListener('keydown', handleKey, true)
+	document.addEventListener('keydown', handleKey, true)
 })
 
 onUnmounted(() => {
@@ -47,7 +47,7 @@ const handleKey = (e: KeyboardEvent) => {
 
 	if (document.activeElement === urlElement.value) {
 		if (e.key === 'Escape' || (e.metaKey && e.key === 'Enter'))
-			return void document.getElementById('url')!.blur()
+			return void urlElement.value?.blur()
 
 		const element = e.target as HTMLInputElement
 		const cursorPosition = element.selectionStart
@@ -66,6 +66,9 @@ const handleKey = (e: KeyboardEvent) => {
 	}
 
 	if (document.activeElement === methodElement.value) {
+		if (e.key === 'Escape' || (e.metaKey && e.key === 'Enter'))
+			return void methodElement.value?.blur()
+
 		if (e.key === 'ArrowLeft') {
 			e.preventDefault()
 			document.getElementById('request-toolbar')?.focus()
@@ -75,6 +78,7 @@ const handleKey = (e: KeyboardEvent) => {
 		if (e.key === 'ArrowRight') {
 			e.preventDefault()
 			urlElement.value?.focus()
+			return
 		}
 	}
 }
@@ -120,7 +124,7 @@ const updateSuggestion = (newMethod: string, newUrl: string) => {
 				y: '10%',
 				backgroundColor: 'rgba(255,255,255,.8)',
 				borderColor: 'rgba(0,0,0,.1)',
-				boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+				boxShadow: '0 6px 25px rgba(0,0,0,0.2)',
 				backdropFilter: 'blur(16px)'
 			}
 		}"
@@ -135,7 +139,7 @@ const updateSuggestion = (newMethod: string, newUrl: string) => {
 			<div class="flex items-center h-7 pr-3 mt-0.25 p-0.25">
 				<select
 					v-model="method"
-					class="relative h-7 p-1.5 rounded-lg interact:bg-violet-500/10 border border-transparent interact:border-violet-500/15 transition-colors outline-none ring-0 cursor-pointer appearance-none font-mono"
+					class="relative h-7 p-1.5 rounded-lg interact:bg-violet-500/10 border border-transparent interact:border-violet-500/15 transition-colors outline-none ring-0 cursor-pointer appearance-none font-mono highlight-focus"
 					ref="method-element"
 					@focus="isFocus = true"
 					@blur="isFocus = false"
@@ -217,20 +221,47 @@ const updateSuggestion = (newMethod: string, newUrl: string) => {
 				style="will-change: width, height, opacity"
 			>
 				<Command.List>
-					<Command.Item
-						class="flex gap-1.5 aria-selected:text-violet-600 font-normal aria-selected:font-medium w-full first:mt-0.5 last:mb-0.25 px-1 py-0.75 aria-selected:bg-violet-500/10 rounded-lg border border-transparent aria-selected:border-violet-500/20 cursor-pointer"
-						v-for="item in editor.active.history"
-						:key="item.timestamp"
-						:data-value="item.url"
-						@select="() => updateSuggestion(item.method, item.url)"
-					>
-						<span class="pl-0.5 font-mono">
-							{{ item.method }}
-						</span>
-						<span>
-							{{ item.url }}
-						</span>
-					</Command.Item>
+					<AnimatePresence>
+						<Motion
+							v-for="item in editor.active.history.filter(
+								(item) =>
+									!url ||
+									(item.url.includes(url) &&
+										item.method === method)
+							)"
+							:key="item.timestamp"
+							:initial="{ height: 0, opacity: 0 }"
+							:animate="{
+								height: 'calc(1.5rem + 2px)',
+								opacity: 1
+							}"
+							:exit="{ height: 0, opacity: 0 }"
+							class="flex items-center overflow-hidden"
+							:transition="{
+								duration: 0.01,
+								type: 'spring',
+								stiffness: 400,
+								damping: 22
+							}"
+							style="will-change: height, opacity"
+						>
+							<Command.Item
+								class="flex gap-1.5 aria-selected:text-violet-600 font-normal aria-selected:font-medium w-full first:mt-0.5 last:mb-0.25 px-1 py-0.75 aria-selected:bg-violet-500/10 rounded-lg border border-transparent aria-selected:border-violet-500/20 cursor-pointer overflow-hidden"
+								:data-value="item.url"
+								@select="
+									() =>
+										updateSuggestion(item.method, item.url)
+								"
+							>
+								<span class="pl-0.5 font-mono">
+									{{ item.method }}
+								</span>
+								<span>
+									{{ item.url }}
+								</span>
+							</Command.Item>
+						</Motion>
+					</AnimatePresence>
 				</Command.List>
 			</Motion>
 		</Command>
