@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+@custom-variant interact (&:hover, &:focus);
+
+:root {
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html,
+body {
+	@apply bg-white/25 overflow-hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+article,
+header,
+section,
+footer,
+aside,
+nav,
+main {
+	@apply cursor-default select-none;
+}

@@ -1,0 +1,49 @@
+{
+	"name": "lagrange",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vue-tsc --noEmit && vite-ssg build",
+		"preview": "vite preview",
+		"tauri": "tauri"
+	},
+	"dependencies": {
+		"@codemirror/commands": "^6.8.0",
+		"@codemirror/lang-json": "^6.0.1",
+		"@codemirror/state": "^6.5.2",
+		"@codemirror/view": "^6.36.4",
+		"@material/web": "^2.2.0",
+		"@tauri-apps/api": "^2",
+		"@tauri-apps/plugin-http": "^2.4.2",
+		"@tauri-apps/plugin-opener": "^2",
+		"codemirror": "^6.0.1",
+		"lucide-vue-next": "^0.482.0",
+		"motion-v": "^0.13.0",
+		"pinia": "^3.0.1",
+		"prettier": "^3.5.3",
+		"radix-vue": "^1.9.17",
+		"splitpanes": "^4.0.3",
+		"vue": "^3.5.13",
+		"vue-command-palette": "^0.2.3"
+	},
+	"devDependencies": {
+		"@tailwindcss/vite": "^4.0.14",
+		"@tauri-apps/cli": "^2",
+		"@types/splitpanes": "^2.2.6",
+		"@unhead/vue": "^2.0.0-rc.13",
+		"@vitejs/plugin-vue": "^5.2.2",
+		"beasties": "^0.2.0",
+		"sass": "^1.85.1",
+		"sass-loader": "^16.0.5",
+		"tailwindcss": "^4.0.14",
+		"typescript": "~5.8.2",
+		"unplugin-auto-import": "^19.1.1",
+		"unplugin-vue-components": "^28.4.1",
+		"vite": "^6.2.2",
+		"vite-ssg": "^25.2.0",
+		"vue-router": "^4.5.0",
+		"vue-tsc": "^2.2.8"
+	}
+}
