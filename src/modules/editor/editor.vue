@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch, computed } from 'vue'
+import { onMounted, onUnmounted, watch, computed, useTemplateRef } from 'vue'
 
 import { basicSetup } from 'codemirror'
 import { EditorState } from '@codemirror/state'
@@ -30,6 +30,7 @@ const props = defineProps<{
 }>()
 
 let view: EditorView | undefined
+let editorRef = useTemplateRef<HTMLDivElement>('editor-ref')
 
 const editorInstance = useEditorInstance()
 
@@ -151,15 +152,16 @@ onMounted(() => {
 		EditorView.domEventHandlers({
 			keydown: save.value,
 			paste: save.value,
-			blur: save.value,
+			blur: save.value
 		})
 	)
 
-	view = new EditorView({
-		doc: props.initial ?? props.doc ?? '',
-		extensions,
-		parent: document.getElementById(props.id)!
-	})
+	if (editorRef.value)
+		view = new EditorView({
+			doc: props.initial ?? props.doc ?? '',
+			extensions,
+			parent: editorRef.value
+		})
 
 	if (props.name) editorInstance.instance(props.name, view)
 
@@ -218,7 +220,7 @@ watch(
 </script>
 
 <template>
-	<div :id="id" :class="props.class" class="editor" />
+	<div :id="id" :class="props.class" class="editor" ref="editor-ref" />
 </template>
 
 <style>

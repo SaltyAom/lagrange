@@ -14,7 +14,7 @@ body {
 
 body {
 	background-color: rgba(255, 255, 255, .25);
-	animation: background-in .8s;
+	animation: background-in .7s;
 }
 
 @keyframes background-in {
@@ -29,7 +29,7 @@ body {
 
 #app {
 	@apply w-full h-full;
-	animation: app-in .825s var(--ease-out-quant);
+	animation: app-in .57s var(--ease-out-quant);
 }
 
 @keyframes app-in {
@@ -42,10 +42,6 @@ body {
 		opacity: 1;
 		transform: scale(1);
 	}
-}
-
-#dynamic-url {
-	animation: app-in .8s var(--ease-out-quant);
 }
 
 h1,
