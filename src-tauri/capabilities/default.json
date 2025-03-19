@@ -4,8 +4,8 @@
 	"description": "Capability for the main window",
 	"windows": ["main"],
 	"permissions": [
+		"core:window:allow-maximize",
 		"core:window:allow-start-dragging",
-		"core:window:allow-show",
 		"core:window:allow-set-always-on-top",
 		{
 			"identifier": "http:default",

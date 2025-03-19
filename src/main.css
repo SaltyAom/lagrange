@@ -4,11 +4,48 @@
 
 :root {
 	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--ease-out-quant: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html,
 body {
-	@apply bg-white/35 overflow-hidden;
+	@apply overflow-hidden;
+}
+
+body {
+	background-color: rgba(255, 255, 255, .25);
+	animation: background-in .8s;
+}
+
+@keyframes background-in {
+	from {
+		background-color: rgba(255, 255, 255, 0);
+	}
+
+	to {
+		background-color: rgba(255, 255, 255, .25);
+	}
+}
+
+#app {
+	@apply w-full h-full;
+	animation: app-in .825s var(--ease-out-quant);
+}
+
+@keyframes app-in {
+	from {
+		opacity: 0;
+		transform: scale(.85);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+#dynamic-url {
+	animation: app-in .8s var(--ease-out-quant);
 }
 
 h1,

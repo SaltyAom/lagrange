@@ -149,9 +149,9 @@ onMounted(() => {
 
 	extensions.push(
 		EditorView.domEventHandlers({
-			change: save.value,
-			input: save.value,
-			paste: save.value
+			keydown: save.value,
+			paste: save.value,
+			blur: save.value,
 		})
 	)
 

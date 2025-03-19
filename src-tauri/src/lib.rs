@@ -1,4 +1,4 @@
-use tauri::{Manager, WindowEvent};
+use tauri::{Manager, TitleBarStyle, WebviewUrl, WebviewWindowBuilder, WindowEvent};
 use traffic::UnsafeWindowHandle;
 
 #[cfg(target_os = "macos")]

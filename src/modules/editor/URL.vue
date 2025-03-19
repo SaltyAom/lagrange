@@ -2,7 +2,7 @@
 import { ref, computed, useTemplateRef, onMounted, onUnmounted } from 'vue'
 
 import { Command } from 'vue-command-palette'
-import { AnimatePresence, Motion } from 'motion-v'
+import { AnimatePresence, motion } from 'motion-v'
 
 import { useEditorStore, EditorHistory } from './store'
 
@@ -111,25 +111,23 @@ const suggestions = computed(() => {
 
 	return suggestions
 })
-
-console.log({ suggestions: suggestions.value })
 </script>
 
 <template>
 	<p ref="ghost-url" class="absolute opacity-0">{{ url || 'URL' }}</p>
-	<Motion
+	<motion.aside
 		tabindex="-1"
-		as="aside"
+		id="dynamic-url"
 		class="relative w-fit max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-20rem)] md:max-w-lg lg:max-w-2xl xl:max-w-4xl min-h-7 mt-0.5 overflow-hidden outline-none"
 		data-tauri-drag-region
 		title="Use ⌘ + E to edit URL"
 		@hover-start="isHover = true"
 		@hover-end="isHover = false"
 		style="
+			border-radius: 0.625rem;
 			will-change:
 				top, width, background-color, box-shadow, transform,
 				backdrop-filter;
-			border-radius: 0.625rem;
 		"
 		:initial="{
 			scale: 1,
@@ -141,7 +139,6 @@ console.log({ suggestions: suggestions.value })
 				'0 1px 2px color-mix(in oklab, var(--color-violet-500) 0%, transparent), 0 0 0 0 color-mix(in oklab, var(--color-violet-500) 25%, transparent)',
 			backdropFilter: ''
 		}"
-		:class="{ 'ring-2': isActive }"
 		:animate="isActive ? 'hover' : 'initial'"
 		:variants="{
 			hover: {
@@ -210,7 +207,7 @@ console.log({ suggestions: suggestions.value })
 					:style="{
 						width: ghostURL
 							? ghostURL.clientWidth + 2 + 'px'
-							: undefined
+							: '3.45ch'
 					}"
 					@focus="isFocus = true"
 					@blur="isFocus = false"
@@ -220,9 +217,8 @@ console.log({ suggestions: suggestions.value })
 				/>
 			</div>
 
-			<Motion
+			<motion.div
 				tabindex="-1"
-				as="div"
 				:initial="{
 					width: 0,
 					height: 0,
@@ -248,7 +244,7 @@ console.log({ suggestions: suggestions.value })
 			>
 				<Command.List>
 					<AnimatePresence>
-						<Motion
+						<motion.div
 							v-for="item in suggestions"
 							:key="item.timestamp"
 							:initial="{ height: 0, opacity: 0 }"
@@ -281,10 +277,10 @@ console.log({ suggestions: suggestions.value })
 									{{ item.url }}
 								</span>
 							</Command.Item>
-						</Motion>
+						</motion.div>
 					</AnimatePresence>
 				</Command.List>
-			</Motion>
+			</motion.div>
 		</Command>
-	</Motion>
+	</motion.aside>
 </template>

@@ -18,11 +18,11 @@
 				"hiddenTitle": true,
 				"titleBarStyle": "Overlay",
 				"skipTaskbar": true,
+				"theme": "Light",
 				"windowEffects": {
-					"effects": ["light", "mica", "acrylic", "blur"],
+					"effects": ["menu", "mica", "acrylic", "blur"],
 					"state": "active"
 				},
-				"visible": false,
 				"width": 600,
 				"height": 400,
 				"minWidth": 600,
