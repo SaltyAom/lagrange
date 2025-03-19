@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, useTemplateRef, onMounted, onUnmounted } from 'vue'
-import { Command } from 'vue-command-palette'
 
+import { Command } from 'vue-command-palette'
 import { AnimatePresence, Motion } from 'motion-v'
 
-import { useEditorStore } from './store'
+import { useEditorStore, EditorHistory } from './store'
 
 const editor = useEditorStore()
 
@@ -89,42 +89,68 @@ const updateSuggestion = (newMethod: string, newUrl: string) => {
 	method.value = newMethod
 	url.value = newUrl
 }
+
+const suggestions = computed(() => {
+	if (!url.value) return editor.active.history
+
+	const suggestions = <EditorHistory[]>[]
+
+	findUnique: for (const item of editor.active.history) {
+		if (!item.url.includes(url.value) || item.method !== method.value)
+			continue
+
+		for (const suggestion of suggestions)
+			if (
+				suggestion.url === item.url &&
+				suggestion.method === item.method
+			)
+				continue findUnique
+
+		suggestions.push(item)
+	}
+
+	return suggestions
+})
+
+console.log({ suggestions: suggestions.value })
 </script>
 
 <template>
 	<p ref="ghost-url" class="absolute opacity-0">{{ url || 'URL' }}</p>
 	<Motion
 		tabindex="-1"
-		as="div"
-		class="relative w-fit max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-20rem)] md:max-w-lg lg:max-w-2xl xl:max-w-4xl min-h-8 mt-0.5 border overflow-hidden outline-none"
+		as="aside"
+		class="relative w-fit max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-20rem)] md:max-w-lg lg:max-w-2xl xl:max-w-4xl min-h-7 mt-0.5 overflow-hidden outline-none"
 		data-tauri-drag-region
 		title="Use ⌘ + E to edit URL"
 		@hover-start="isHover = true"
 		@hover-end="isHover = false"
 		style="
-			will-change: width, background-color, border-color, box-shadow;
+			will-change:
+				top, width, background-color, box-shadow, transform,
+				backdrop-filter;
 			border-radius: 0.625rem;
 		"
-		:style="{
-			backdropFilter: isActive ? 'blur(4px)' : ''
-		}"
 		:initial="{
 			scale: 1,
 			y: '0%',
 			width: ghostURL ? ghostURL.clientWidth + 2 + 'px' : 'auto',
-			backgroundColor: 'rgba(255,255,255,0)',
-			borderColor: 'rgba(0,0,0,0)',
-			boxShadow: '0 1px 2px rgba(0,0,0,0)',
+			backgroundColor:
+				' color-mix(in oklab, var(--color-violet-100) 0%, transparent)',
+			boxShadow:
+				'0 1px 2px color-mix(in oklab, var(--color-violet-500) 0%, transparent), 0 0 0 0 color-mix(in oklab, var(--color-violet-500) 25%, transparent)',
 			backdropFilter: ''
 		}"
+		:class="{ 'ring-2': isActive }"
 		:animate="isActive ? 'hover' : 'initial'"
 		:variants="{
 			hover: {
 				scale: 1.2,
-				y: '10%',
-				backgroundColor: 'rgba(255,255,255,.8)',
-				borderColor: 'rgba(0,0,0,.1)',
-				boxShadow: '0 6px 25px rgba(0,0,0,0.2)',
+				y: '15%',
+				backgroundColor:
+					'color-mix(in oklab, var(--color-violet-200) 35%, transparent)',
+				boxShadow:
+					'0 12px 48px color-mix(in oklab, var(--color-violet-500) 25%, transparent), 0 0 0 1px color-mix(in oklab, var(--color-violet-500) 15%, transparent)',
 				backdropFilter: 'blur(16px)'
 			}
 		}"
@@ -136,10 +162,10 @@ const updateSuggestion = (newMethod: string, newUrl: string) => {
 		}"
 	>
 		<Command class="flex flex-col" theme="custom">
-			<div class="flex items-center h-7 pr-3 mt-0.25 p-0.25">
+			<div class="flex items-center h-7 pr-3 p-0.25">
 				<select
 					v-model="method"
-					class="relative h-7 p-1.5 rounded-lg interact:bg-violet-500/10 border border-transparent interact:border-violet-500/15 transition-colors outline-none ring-0 cursor-pointer appearance-none font-mono highlight-focus"
+					class="relative h-6 ml-0.25 pt-0.5 px-1.5 rounded-lg interact:bg-violet-500/10 transition-colors outline-none cursor-pointer border border-transparent interact:border-violet-500/50 appearance-none font-mono highlight-focus"
 					ref="method-element"
 					@focus="isFocus = true"
 					@blur="isFocus = false"
@@ -223,20 +249,15 @@ const updateSuggestion = (newMethod: string, newUrl: string) => {
 				<Command.List>
 					<AnimatePresence>
 						<Motion
-							v-for="item in editor.active.history.filter(
-								(item) =>
-									!url ||
-									(item.url.includes(url) &&
-										item.method === method)
-							)"
+							v-for="item in suggestions"
 							:key="item.timestamp"
 							:initial="{ height: 0, opacity: 0 }"
 							:animate="{
-								height: 'calc(1.5rem + 2px)',
+								height: '1.5rem',
 								opacity: 1
 							}"
 							:exit="{ height: 0, opacity: 0 }"
-							class="flex items-center overflow-hidden"
+							class="flex items-center overflow-hidden cursor-pointer"
 							:transition="{
 								duration: 0.01,
 								type: 'spring',
@@ -246,7 +267,7 @@ const updateSuggestion = (newMethod: string, newUrl: string) => {
 							style="will-change: height, opacity"
 						>
 							<Command.Item
-								class="flex gap-1.5 aria-selected:text-violet-600 font-normal aria-selected:font-medium w-full first:mt-0.5 last:mb-0.25 px-1 py-0.75 aria-selected:bg-violet-500/10 rounded-lg border border-transparent aria-selected:border-violet-500/20 cursor-pointer overflow-hidden"
+								class="flex gap-1.5 aria-selected:text-violet-600 font-normal aria-selected:font-medium w-full px-1 py-0.75 aria-selected:bg-violet-500/10 rounded-lg cursor-pointer overflow-hidden"
 								:data-value="item.url"
 								@select="
 									() =>

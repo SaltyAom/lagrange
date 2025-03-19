@@ -13,6 +13,8 @@ export const editorTypes = [
 ] as const
 export type editorTypes = typeof editorTypes
 
+export type EditorHistory = (Pick<Editor, 'url' | 'method'> & { timestamp: number })
+
 interface Editor {
 	url: string
 	method: string
@@ -24,7 +26,7 @@ interface Editor {
 		status: number | null
 		ellapsed: number | null
 	}
-	history: (Pick<Editor, 'url' | 'method'> & { timestamp: number })[]
+	history: EditorHistory[]
 }
 
 type DeepPartial<T> = T extends object

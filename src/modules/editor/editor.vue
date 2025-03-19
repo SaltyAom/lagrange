@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from 'vue'
+import { onMounted, onUnmounted, watch, computed } from 'vue'
 
 import { basicSetup } from 'codemirror'
 import { EditorState } from '@codemirror/state'
@@ -32,6 +32,14 @@ const props = defineProps<{
 let view: EditorView | undefined
 
 const editorInstance = useEditorInstance()
+
+const save = computed(() =>
+	props.onInput
+		? (_: unknown, view: EditorView | undefined) => {
+				if (view) props.onInput!(view.state.doc.toString())
+			}
+		: undefined
+)
 
 onMounted(() => {
 	const unwrap = (value?: string | (() => unknown)) => {
@@ -139,16 +147,11 @@ onMounted(() => {
 		EditorState.readOnly.of(props.readOnly ?? false)
 	]
 
-	const save = props.onInput
-		? (_: unknown, view: EditorView | undefined) => {
-				if (view) props.onInput!(view.state.doc.toString())
-			}
-		: undefined
-
 	extensions.push(
 		EditorView.domEventHandlers({
-			change: save,
-			input: save
+			change: save.value,
+			input: save.value,
+			paste: save.value
 		})
 	)
 
@@ -175,7 +178,7 @@ onMounted(() => {
 watch(
 	() => props.id,
 	() => {
-		if (view)
+		if (view) {
 			view.dispatch({
 				changes: {
 					from: 0,
@@ -183,6 +186,7 @@ watch(
 					insert: props.initial
 				}
 			})
+		}
 	}
 )
 
@@ -256,7 +260,11 @@ watch(
 
 .cm-activeLine.cm-line,
 .cm-gutterElement.cm-activeLineGutter {
-	@apply bg-slate-500/10;
+	@apply bg-violet-500/7.5;
+}
+
+.cm-gutterElement.cm-activeLineGutter {
+	@apply text-violet-500;
 }
 
 .cm-activeLine.cm-line {
@@ -269,5 +277,10 @@ watch(
 
 .cm-foldGutter > .cm-gutterElement.cm-activeLineGutter {
 	@apply rounded-l-none;
+}
+
+.cm-selectionBackground,
+.cm-editor ::selection {
+	@apply !bg-violet-500/10;
 }
 </style>

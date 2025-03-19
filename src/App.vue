@@ -45,7 +45,7 @@ const handleKey = (e: KeyboardEvent) => {
 		data-tauri-drag-region
 	>
 		<button
-			class="absolute left-18.5 group flex justify-center items-center w-7 h-7 mt-1 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer highlight-focus"
+			class="absolute left-18.5 group flex justify-center items-center w-7 h-7 mt-1 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer highlight-focus highlight-active"
 			:class="{
 				'!bg-violet-500/15 !border-violet-500/25': false
 			}"
@@ -59,7 +59,7 @@ const handleKey = (e: KeyboardEvent) => {
 		<URL />
 		<section class="absolute right-1 flex flex-row-reverse mt-1">
 			<Toggle
-				class="group flex justify-center items-center w-7 h-7 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer highlight-focus"
+				class="group flex justify-center items-center w-7 h-7 rounded-lg text-slate-500 interact:bg-violet-500/10 transition-colors outline-none border border-transparent interact:border-violet-500/20 ring-0 cursor-pointer highlight-focus highlight-active"
 				v-model:pressed="isPinned"
 				:class="{
 					'!bg-violet-500/15 !border-violet-500/25': isPinned
@@ -100,7 +100,7 @@ const handleKey = (e: KeyboardEvent) => {
 				}"
 			>
 				<article
-					class="relative flex flex-col w-full h-full overflow-hidden"
+					class="relative flex flex-col w-full h-full"
 				>
 					<Response />
 				</article>

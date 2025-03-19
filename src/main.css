@@ -8,7 +8,7 @@
 
 html,
 body {
-	@apply bg-white/25 overflow-hidden;
+	@apply bg-white/35 overflow-hidden;
 }
 
 h1,
@@ -30,6 +30,11 @@ main {
 	@apply cursor-default select-none;
 }
 
+.highlight-interact:hover,
+.highlight-interact:focus {
+	animation: highlight-focus .3s ease-in-out;
+}
+
 .highlight-focus:focus {
 	animation: highlight-focus .3s ease-in-out;
 }
@@ -41,6 +46,24 @@ main {
 
 	50% {
 		transform: scale(1.175);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+
+.highlight-active:active {
+	animation: highlight-active .15s ease-in;
+}
+
+@keyframes highlight-active {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(0.825);
 	}
 
 	100% {

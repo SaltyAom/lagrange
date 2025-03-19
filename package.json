@@ -42,6 +42,7 @@
 		"unplugin-auto-import": "^19.1.1",
 		"unplugin-vue-components": "^28.4.1",
 		"vite": "^6.2.2",
+		"vite-bundle-analyzer": "^0.18.0",
 		"vite-ssg": "^25.2.0",
 		"vue-router": "^4.5.0",
 		"vue-tsc": "^2.2.8"

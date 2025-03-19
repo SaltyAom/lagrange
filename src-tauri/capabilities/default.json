@@ -4,8 +4,6 @@
 	"description": "Capability for the main window",
 	"windows": ["main"],
 	"permissions": [
-		"core:default",
-		"opener:default",
 		"core:window:allow-start-dragging",
 		"core:window:allow-show",
 		"core:window:allow-set-always-on-top",
@@ -14,8 +12,7 @@
 			"allow": [
 				{ "url": "http://**:*" },
 				{ "url": "https://**:*" }
-			],
-			"deny": [{ "url": "https://private.tauri.app" }]
+			]
 		}
 	]
 }

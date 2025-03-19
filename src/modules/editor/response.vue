@@ -57,7 +57,11 @@ const focusToolbar = () => {
 				}}
 			</h2>
 		</div>
-		<RadioGroupRoot type="single" v-model="type" class="flex">
+		<RadioGroupRoot
+			type="single"
+			v-model="type"
+			class="flex items-center text-xs"
+		>
 			<Chip
 				v-for="item in types"
 				:value="item"

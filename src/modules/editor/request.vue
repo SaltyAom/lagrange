@@ -38,7 +38,7 @@ const toolbar = () => {
 	<RadioGroupRoot
 		v-model="type"
 		type="single"
-		class="flex items-start text-xs pr-2 overflow-hidden"
+		class="flex items-start text-xs pr-2"
 	>
 		<Chip
 			v-for="item in editorTypes"
