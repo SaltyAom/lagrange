@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import { useEditorStore, useEditorInstance } from './store'
 
-import { RadioGroupRoot } from 'radix-vue'
+import { RadioGroupRoot } from 'reka-ui'
 
 import Editor from './editor.vue'
 import Chip from '../../components/chip.vue'
@@ -75,10 +75,10 @@ const focusToolbar = () => {
 		</RadioGroupRoot>
 	</header>
 	<div
-		class="absolute z-30 flex justify-center items-center w-full h-full"
+		class="absolute z-30 flex justify-center items-center w-full h-full select-none pointer-events-none"
 		:class="editor.isFetching ? 'block' : 'hidden'"
 	>
-		<img class="w-36 pb-6" src="/gif/doro.gif" alt="doro" />
+		<img class="w-36 pb-6" src="/assets/a-chan.gif" alt="a chan typing..." />
 	</div>
 	<div
 		v-if="!editor.isFetching && !editor.active.response.ellapsed"

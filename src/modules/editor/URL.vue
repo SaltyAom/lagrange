@@ -1,30 +1,15 @@
 <script setup lang="ts">
-import { ref, computed, useTemplateRef, onMounted, onUnmounted } from 'vue'
+import { ref, computed, useTemplateRef } from 'vue'
+import { useKeyDown } from '../../utils/keydown'
 
-import { Command } from 'vue-command-palette'
 import { AnimatePresence, motion } from 'motion-v'
+import { Command } from 'vue-command-palette'
 
-import { useEditorStore, EditorHistory } from './store'
+import { useEditorStore, type EditorHistory } from './store'
+import { storeToRefs } from 'pinia'
 
 const editor = useEditorStore()
-
-const url = computed({
-	get() {
-		return editor.active.url
-	},
-	set(value) {
-		editor.active.url = value
-	}
-})
-
-const method = computed({
-	get() {
-		return editor.active.method
-	},
-	set(value) {
-		editor.active.method = value
-	}
-})
+const activeEditor = storeToRefs(editor).active
 
 const isHover = ref(false)
 const isFocus = ref(false)
@@ -34,69 +19,69 @@ const urlElement = useTemplateRef<HTMLInputElement | null>('url-element')
 const methodElement = useTemplateRef<HTMLSelectElement>('method-element')
 const ghostURL = useTemplateRef<HTMLElement>('ghost-url')
 
-onMounted(() => {
-	document.addEventListener('keydown', handleKey, true)
-})
+useKeyDown((e) => {
+	if (e.metaKey && e.key === 'r') return urlElement.value?.focus()
 
-onUnmounted(() => {
-	window.removeEventListener('keydown', handleKey, true)
-})
+	const ignore = () => e.preventDefault
 
-const handleKey = (e: KeyboardEvent) => {
-	if (e.metaKey && e.key === 'r') return void urlElement.value?.focus()
+	const element = e.target as HTMLInputElement
+	const cursorPosition = element.selectionStart
 
-	if (document.activeElement === urlElement.value) {
-		if (e.key === 'Escape' || (e.metaKey && e.key === 'Enter'))
-			return void urlElement.value?.blur()
+	switch (document.activeElement) {
+		case urlElement.value:
+			if (e.key === 'Escape' || (e.metaKey && e.key === 'Enter'))
+				return urlElement.value?.blur()
 
-		const element = e.target as HTMLInputElement
-		const cursorPosition = element.selectionStart
+			if (e.key === 'ArrowLeft' && cursorPosition === 0)
+				return ignore() && methodElement.value?.focus()
 
-		if (e.key === 'ArrowLeft' && cursorPosition === 0) {
-			e.preventDefault()
-			methodElement.value?.focus()
-			return
-		}
+			if (
+				e.key === 'ArrowRight' &&
+				cursorPosition === element.value.length
+			)
+				return (
+					ignore() &&
+					document.getElementById('response-toolbar')?.focus()
+				)
 
-		if (e.key === 'ArrowRight' && cursorPosition === element.value.length) {
-			e.preventDefault()
-			document.getElementById('response-toolbar')?.focus()
-			return
-		}
+			break
+
+		case methodElement.value:
+			if (e.key === 'Escape' || (e.metaKey && e.key === 'Enter'))
+				return methodElement.value?.blur()
+
+			if (e.key === 'ArrowLeft')
+				return (
+					ignore() &&
+					document.getElementById('request-toolbar')?.focus()
+				)
+
+			if (e.key === 'ArrowRight')
+				return ignore() && urlElement.value?.focus()
+
+			break
 	}
+}, false)
 
-	if (document.activeElement === methodElement.value) {
-		if (e.key === 'Escape' || (e.metaKey && e.key === 'Enter'))
-			return void methodElement.value?.blur()
-
-		if (e.key === 'ArrowLeft') {
-			e.preventDefault()
-			document.getElementById('request-toolbar')?.focus()
-			return
-		}
-
-		if (e.key === 'ArrowRight') {
-			e.preventDefault()
-			urlElement.value?.focus()
-			return
-		}
-	}
-}
-
-const updateSuggestion = (newMethod: string, newUrl: string) => {
+const updateSuggestion = (method: string, url: string) => {
 	if (editor.isFetching) return
 
-	method.value = newMethod
-	url.value = newUrl
+	editor.update({
+		method,
+		url
+	})
 }
 
 const suggestions = computed(() => {
-	if (!url.value) return editor.active.history
+	if (!activeEditor.value.url) return editor.active.history
 
 	const suggestions = <EditorHistory[]>[]
 
 	findUnique: for (const item of editor.active.history) {
-		if (!item.url.includes(url.value) || item.method !== method.value)
+		if (
+			!item.url.includes(activeEditor.value.url) ||
+			item.method !== activeEditor.value.method
+		)
 			continue
 
 		for (const suggestion of suggestions)
@@ -114,7 +99,9 @@ const suggestions = computed(() => {
 </script>
 
 <template>
-	<p ref="ghost-url" class="absolute opacity-0">{{ url || 'URL' }}</p>
+	<p ref="ghost-url" class="absolute opacity-0">
+		{{ activeEditor.url || 'URL' }}
+	</p>
 	<motion.aside
 		tabindex="-1"
 		id="dynamic-url"
@@ -161,7 +148,7 @@ const suggestions = computed(() => {
 		<Command class="flex flex-col" theme="custom">
 			<div class="flex items-center h-7 pr-3 p-0.25">
 				<select
-					v-model="method"
+					v-model="activeEditor.method"
 					class="relative h-6 ml-0.25 pt-0.5 px-1.5 rounded-lg interact:bg-violet-500/10 transition-colors outline-none cursor-pointer border border-transparent interact:border-violet-500/50 appearance-none font-mono highlight-focus"
 					ref="method-element"
 					@focus="isFocus = true"
@@ -172,7 +159,7 @@ const suggestions = computed(() => {
 							: 'text-gray-500 interact:text-violet-500 font-normal'
 					"
 					:style="{
-						width: `calc(${method.length}ch + (var(--spacing) * 1.5 * 2) + 2px)`
+						width: `calc(${activeEditor.method.length}ch + (var(--spacing) * 1.5 * 2) + 2px)`
 					}"
 				>
 					<option
@@ -192,7 +179,7 @@ const suggestions = computed(() => {
 				</select>
 				<input
 					placeholder="URL"
-					v-model="url"
+					v-model="activeEditor.url"
 					id="url"
 					type="url"
 					ref="url-element"

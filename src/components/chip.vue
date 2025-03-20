@@ -1,42 +1,31 @@
 <script setup lang="ts">
-import { RadioGroupItem } from 'radix-vue'
+import { RadioGroupItem } from 'reka-ui'
+
+import { unwrapKey, type Keybind } from '../utils/keybind'
 
 const props = defineProps<{
 	active?: boolean
 	value: string
 	id?: string
-	upElement?: string | (() => unknown)
-	downElement?: string | (() => unknown)
+	upElement?: Keybind
+	downElement?: Keybind
 }>()
-
-const unwrap = (value?: string | (() => unknown)) => {
-	switch (typeof value) {
-		case 'function':
-			return value
-
-		case 'string':
-			return document.getElementById(value)
-	}
-
-	return null
-}
 
 const handleKey = (event: KeyboardEvent) => {
 	if (event.key === 'Escape')
 		(document.activeElement as HTMLInputElement)?.blur()
 
-	const upElement = unwrap(props.upElement)
-	const downElement = unwrap(props.downElement)
+	const handleUp = unwrapKey(props.upElement)
+	const handleDown = unwrapKey(props.downElement)
 
 	let current: HTMLElement | null = null
 	if (props.active && props.id) current = document.getElementById(props.id)
 
-	if (upElement && event.key === 'ArrowUp') {
+	if (handleUp && event.key === 'ArrowUp') {
 		event.preventDefault()
 
 		requestAnimationFrame(() => {
-			if (typeof upElement === 'function') upElement()
-			else upElement.focus()
+			handleUp()
 
 			if (current) current.click()
 		})
@@ -44,12 +33,11 @@ const handleKey = (event: KeyboardEvent) => {
 		return
 	}
 
-	if (downElement && event.key === 'ArrowDown') {
+	if (handleDown && event.key === 'ArrowDown') {
 		event.preventDefault()
 
 		requestAnimationFrame(() => {
-			if (typeof downElement === 'function') downElement()
-			else downElement.focus()
+			handleDown()
 
 			if (current) current.click()
 		})
@@ -65,8 +53,7 @@ const handleKey = (event: KeyboardEvent) => {
 		class="text-slate-500 px-1 py-0.25 interact:bg-violet-500/10 interact:text-violet-500/90 rounded-full transition-all outline-none ring-0 cursor-pointer capitalize highlight-focus"
 		:id="props.id"
 		:class="{
-			'!bg-violet-500/10 !text-violet-500 font-medium':
-				props.active
+			'!bg-violet-500/10 !text-violet-500 font-medium': props.active
 		}"
 		@keydown="handleKey"
 	>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { RadioGroupRoot } from 'radix-vue'
+import { RadioGroupRoot } from 'reka-ui'
 
 import Editor from './editor.vue'
 import Chip from '../../components/chip.vue'

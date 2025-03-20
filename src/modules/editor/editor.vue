@@ -9,6 +9,9 @@ import { defaultKeymap } from '@codemirror/commands'
 
 import { useEditorInstance, type EditorInstance } from './store'
 
+import { unwrapKey, type Keybind } from '../../utils/keybind'
+import { useKeyDown } from '../../utils/keydown'
+
 // import * as prettier from 'prettier/standalone'
 // import * as parserBabel from 'prettier/parser-babel'
 // import * as prettierPluginEstree from 'prettier/plugins/estree'
@@ -22,10 +25,10 @@ const props = defineProps<{
 	onInput?(doc: string): void
 	shortcut?: string
 	shortcutMeta?: boolean
-	upElement?: string | (() => unknown)
-	downElement?: string | (() => unknown)
-	leftElement?: string | (() => unknown)
-	rightElement?: string | (() => unknown)
+	upElement?: Keybind
+	downElement?: Keybind
+	leftElement?: Keybind
+	rightElement?: Keybind
 	name?: keyof EditorInstance
 }>()
 
@@ -43,22 +46,10 @@ const save = computed(() =>
 )
 
 onMounted(() => {
-	const unwrap = (value?: string | (() => unknown)) => {
-		switch (typeof value) {
-			case 'function':
-				return value
-
-			case 'string':
-				return document.getElementById(value)
-		}
-
-		return null
-	}
-
-	const upElement = unwrap(props.upElement)
-	const downElement = unwrap(props.downElement)
-	const leftElement = unwrap(props.leftElement)
-	const rightElement = unwrap(props.rightElement)
+	const handleUp = unwrapKey(props.upElement)
+	const handleDown = unwrapKey(props.downElement)
+	const handleLeft = unwrapKey(props.leftElement)
+	const handleRight = unwrapKey(props.rightElement)
 
 	const up = defaultKeymap.find((x) => x.key === 'ArrowUp')
 	const down = defaultKeymap.find((x) => x.key === 'ArrowDown')
@@ -76,14 +67,9 @@ onMounted(() => {
 				...up,
 				key: 'ArrowUp',
 				run(view) {
-					if (upElement && view.state.selection.main.to === 0) {
-						if (typeof upElement === 'function') upElement()
-						else upElement.focus()
-
-						return true
-					}
-
-					if (up?.run) up.run(view)
+					if (handleUp && view.state.selection.main.to === 0)
+						handleUp()
+					else if (up?.run) up.run(view)
 
 					return true
 				}
@@ -93,16 +79,11 @@ onMounted(() => {
 				key: 'ArrowDown',
 				run(view) {
 					if (
-						downElement &&
+						handleDown &&
 						view.state.selection.main.from === view.state.doc.length
-					) {
-						if (typeof downElement === 'function') downElement()
-						else downElement.focus()
-
-						return true
-					}
-
-					if (down?.run) down.run(view)
+					)
+						handleDown()
+					else if (down?.run) down.run(view)
 
 					return true
 				}
@@ -111,14 +92,9 @@ onMounted(() => {
 				...left,
 				key: 'ArrowLeft',
 				run(view) {
-					if (leftElement && view.state.selection.main.from === 0) {
-						if (typeof leftElement === 'function') leftElement()
-						else leftElement.focus()
-
-						return true
-					}
-
-					if (left?.run) left.run(view)
+					if (handleLeft && view.state.selection.main.from === 0)
+						handleLeft()
+					else if (left?.run) left.run(view)
 
 					return true
 				}
@@ -128,33 +104,30 @@ onMounted(() => {
 				key: 'ArrowRight',
 				run(view) {
 					if (
-						rightElement &&
+						handleRight &&
 						view.state.selection.main.to === view.state.doc.length
-					) {
-						if (typeof rightElement === 'function') rightElement()
-						else rightElement.focus()
-
-						return true
-					}
-
-					if (right?.run) right.run(view)
+					)
+						handleRight()
+					else if (right?.run) right.run(view)
 
 					return true
 				}
-			}
+			},
+			...defaultKeymap,
 		]),
 		basicSetup,
 		json(),
 		EditorState.readOnly.of(props.readOnly ?? false)
 	]
 
-	extensions.push(
-		EditorView.domEventHandlers({
-			keydown: save.value,
-			paste: save.value,
-			blur: save.value
-		})
-	)
+	if (save.value)
+		extensions.push(
+			EditorView.domEventHandlers({
+				keydown: save.value,
+				paste: save.value,
+				blur: save.value
+			})
+		)
 
 	if (editorRef.value)
 		view = new EditorView({
@@ -163,32 +136,29 @@ onMounted(() => {
 			parent: editorRef.value
 		})
 
-	if (props.name) editorInstance.instance(props.name, view)
-
-	if (props.shortcut)
-		document.addEventListener('keydown', (event) => {
-			const isMeta =
-				!props.shortcutMeta || (props.shortcutMeta && event.metaKey)
-
-			if (view && isMeta && event.key === props.shortcut) {
-				event.preventDefault()
-				view.focus()
-			}
-		})
+	if (props.name && view) editorInstance.instance(props.name, view)
 })
 
+useKeyDown((event) => {
+	const isMeta = !props.shortcutMeta || (props.shortcutMeta && event.metaKey)
+
+	if (view && isMeta && event.key === props.shortcut) {
+		event.preventDefault()
+		view.focus()
+	}
+}, false)
+
 watch(
-	() => props.id,
+	() => [props.doc, props.id],
 	() => {
-		if (view) {
+		if (view)
 			view.dispatch({
 				changes: {
 					from: 0,
 					to: view.state.doc.length,
-					insert: props.initial
+					insert: props.doc
 				}
 			})
-		}
 	}
 )
 
@@ -197,26 +167,6 @@ onUnmounted(() => {
 
 	view?.destroy()
 })
-
-watch(
-	() => props.doc,
-	(doc) => {
-		// if (props.readOnly)
-		// 	try {
-		// 		doc = await prettier.format(doc ?? '', {
-		// 			parser: 'babel',
-		// 			plugins: [parserBabel, prettierPluginEstree as any],
-		// 			tabWidth: 2,
-		// 			useTabs: true
-		// 		})
-		// 	} catch {}
-
-		if (view)
-			view.dispatch({
-				changes: { from: 0, to: view.state.doc.length, insert: doc }
-			})
-	}
-)
 </script>
 
 <template>
@@ -260,6 +210,11 @@ watch(
 	align-content: center;
 }
 
+.cm-selectionBackground,
+.cm-editor ::selection {
+	@apply !bg-slate-500/15;
+}
+
 .cm-activeLine.cm-line,
 .cm-gutterElement.cm-activeLineGutter {
 	@apply bg-violet-500/7.5;
@@ -279,10 +234,5 @@ watch(
 
 .cm-foldGutter > .cm-gutterElement.cm-activeLineGutter {
 	@apply rounded-l-none;
-}
-
-.cm-selectionBackground,
-.cm-editor ::selection {
-	@apply !bg-violet-500/10;
 }
 </style>

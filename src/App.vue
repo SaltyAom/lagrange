@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
+
 import { getCurrentWindow } from '@tauri-apps/api/window'
 
 import URL from './modules/editor/URL.vue'
@@ -7,9 +8,11 @@ import Request from './modules/editor/request.vue'
 import Response from './modules/editor/response.vue'
 
 import { Pin, Sidebar } from 'lucide-vue-next'
-import { Toggle } from 'radix-vue'
+import { Toggle } from 'reka-ui'
 
-import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'radix-vue'
+import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
+
+import { useKeyDown } from './utils/keydown'
 
 const isFocus = ref(false)
 const isPinned = ref(false)
@@ -20,23 +23,15 @@ watch(isPinned, (value) => {
 	win.setAlwaysOnTop(value)
 })
 
-onMounted(() => {
-	document.addEventListener('keydown', handleKey, true)
-})
-
-onUnmounted(() => {
-	window.removeEventListener('keydown', handleKey, true)
-})
-
-const handleKey = (e: KeyboardEvent) => {
+useKeyDown((event) => {
 	if (document.activeElement !== document.body) return
 
-	if (e.metaKey && e.key === 'ArrowLeft')
-		return void document.getElementById('resize-handler')?.focus()
-
-	if (e.metaKey && e.key === 'ArrowRight')
-		return void document.getElementById('resize-handler')?.focus()
-}
+	if (
+		event.metaKey &&
+		(event.key === 'ArrowLeft' || event.key === 'ArrowRight')
+	)
+		document.getElementById('resize-handler')?.focus()
+})
 </script>
 
 <template>
@@ -99,9 +94,7 @@ const handleKey = (e: KeyboardEvent) => {
 					transition: isFocus ? 'flex 0.4s var(--ease-out-expo)' : ''
 				}"
 			>
-				<article
-					class="relative flex flex-col w-full h-full"
-				>
+				<article class="relative flex flex-col w-full h-full">
 					<Response />
 				</article>
 			</SplitterPanel>
