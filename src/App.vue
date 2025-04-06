@@ -8,9 +8,8 @@ import Request from './modules/editor/request.vue'
 import Response from './modules/editor/response.vue'
 
 import { Pin, Sidebar } from 'lucide-vue-next'
-import { Toggle } from 'reka-ui'
 
-import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
+import { Toggle, SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
 
 import { useKeyDown } from './utils/keydown'
 
@@ -68,10 +67,10 @@ useKeyDown((event) => {
 			</Toggle>
 		</section>
 	</nav>
-	<main class="relative flex w-full h-screen pt-7.5">
+	<main class="relative flex w-full h-screen pt-7">
 		<SplitterGroup direction="horizontal">
 			<SplitterPanel
-				class="relative flex flex-col h-[calc(100vh-2.25rem)] pt-1 pl-1 overflow-hidden"
+				class="relative flex flex-col h-full pt-1 pl-1 overflow-hidden"
 				:style="{
 					transition: isFocus ? 'flex 0.4s var(--ease-out-expo)' : ''
 				}"
@@ -89,7 +88,7 @@ useKeyDown((event) => {
 				/>
 			</SplitterResizeHandle>
 			<SplitterPanel
-				class="flex flex-col h-[calc(100vh-2.25rem)] pt-1"
+				class="flex flex-col h-full pt-1"
 				:style="{
 					transition: isFocus ? 'flex 0.4s var(--ease-out-expo)' : ''
 				}"

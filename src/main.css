@@ -103,3 +103,9 @@ main {
 		transform: scale(1);
 	}
 }
+
+// Tauri font use Times New Roman bug
+// https://github.com/tauri-apps/tauri/issues/7286
+select, option {
+	font-weight: 400 !important;
+}

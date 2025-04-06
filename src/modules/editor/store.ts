@@ -13,7 +13,9 @@ export const editorTypes = [
 ] as const
 export type editorTypes = typeof editorTypes
 
-export type EditorHistory = (Pick<Editor, 'url' | 'method'> & { timestamp: number })
+export type EditorHistory = Pick<Editor, 'url' | 'method'> & {
+	timestamp: number
+}
 
 interface Editor {
 	url: string
@@ -101,8 +103,8 @@ export const useEditorStore = defineStore('editor', {
 		},
 		update(editor: DeepPartial<Editor>) {
 			this.editors[this.index] = {
-				...editor,
 				...this.active,
+				...editor,
 				request: editor.request
 					? {
 							...this.active.request,

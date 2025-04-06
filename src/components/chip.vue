@@ -56,6 +56,7 @@ const handleKey = (event: KeyboardEvent) => {
 			'!bg-violet-500/10 !text-violet-500 font-medium': props.active
 		}"
 		@keydown="handleKey"
+		tabindex="-1"
 	>
 		<slot />
 	</RadioGroupItem>

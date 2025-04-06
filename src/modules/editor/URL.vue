@@ -250,14 +250,15 @@ const suggestions = computed(() => {
 							style="will-change: height, opacity"
 						>
 							<Command.Item
-								class="flex gap-1.5 aria-selected:text-violet-600 font-normal aria-selected:font-medium w-full px-1 py-0.75 aria-selected:bg-violet-500/10 rounded-lg cursor-pointer overflow-hidden"
+								class="group flex items-center gap-1.5 aria-selected:text-violet-600 font-normal w-full px-1 py-0.75 aria-selected:bg-violet-500/10 rounded-lg cursor-pointer overflow-hidden"
 								:data-value="item.url"
 								@select="
 									() =>
 										updateSuggestion(item.method, item.url)
 								"
 							>
-								<span class="pl-0.5 font-mono">
+								<div aria-hidden class="absolute left-0.5 w-0.5 h-0 group-aria-selected:h-3 bg-violet-600 rounded transition-all" />
+								<span class="pl-0.75 font-mono">
 									{{ item.method }}
 								</span>
 								<span>
